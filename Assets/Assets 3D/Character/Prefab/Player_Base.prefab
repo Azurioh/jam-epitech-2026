@@ -228,8 +228,11 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 8
   rotationSpeed: 3
+  attackType: 0
   attackCooldown: 0.6
   weaponHitbox: {fileID: 0}
+  projectilePrefab: {fileID: 0}
+  shootPoint: {fileID: 0}
   abilityScript: {fileID: 0}
   ultimateScript: {fileID: 0}
   jumpForce: 2
@@ -239,6 +242,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  knockbackDamping: 10
   isGrounded: 0
 --- !u!114 &157521178179546558
 MonoBehaviour:

@@ -2191,6 +2191,10 @@ PrefabInstance:
       propertyPath: ultimateScript
       value: 
       objectReference: {fileID: -1923985001428399225}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: groundMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: _data._json
       value: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"MOVE_SPEED","value":{"$content":8.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
@@ -2272,7 +2276,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5039108561582260776, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3456544494
+      value: 16779033
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
