@@ -253,6 +253,7 @@ public class PlayerController : NetworkBehaviour
         if (newValue <= 0f)
         {
             isDead = true;
+            Debug.Log($"[Player {OwnerClientId}] DEATH - HP dropped from {oldValue} to {newValue}");
             animator.SetTrigger(deathHash);
             if (IsOwner)
             {
@@ -263,6 +264,7 @@ public class PlayerController : NetworkBehaviour
         }
         else if (newValue < oldValue)
         {
+            Debug.Log($"[Player {OwnerClientId}] HIT - Took {oldValue - newValue} damage ({oldValue} -> {newValue} HP)");
             animator.SetTrigger(hitHash);
         }
     }
@@ -342,6 +344,7 @@ public class PlayerController : NetworkBehaviour
 
         if (isGrounded)
         {
+            Debug.Log($"[Player {OwnerClientId}] JUMP - Force: {jumpForce}");
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
             animator.SetTrigger(jumpHash);
             // Synchroniser le trigger de saut aux autres clients
@@ -376,7 +379,7 @@ public class PlayerController : NetworkBehaviour
         lastAttackTime = Time.time;
         currentAttackDuration = attackCooldown;
         isAttacking = true;
-        Debug.Log("Attack");
+        Debug.Log($"[Player {OwnerClientId}] ATTACK - Cooldown: {attackCooldown}s, WeaponHitbox: {(weaponHitbox != null ? "OK" : "MISSING")}");
         if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(attackHash);
         AttackServerRpc();
@@ -411,6 +414,7 @@ public class PlayerController : NetworkBehaviour
         if (ability == null) return;
         if (!ability.IsReady) return;
 
+        Debug.Log($"[Player {OwnerClientId}] SPECIAL1 (Ability) - LockDuration: {ability.AttackLockDuration}s");
         ability.Activate();
 
         isAttacking = true;
@@ -449,6 +453,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
+        Debug.Log($"[Player {OwnerClientId}] SPECIAL2 (Ultimate) - LockDuration: {ultimate.AttackLockDuration}s");
         ultimate.Activate();
 
         isAttacking = true;
