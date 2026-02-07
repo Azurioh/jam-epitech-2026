@@ -3930,6 +3930,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelectorUI
   characterNameText: {fileID: 873876438}
   selector: {fileID: 1854564420}
+  infoPanel: {fileID: 0}
+  characterDataList: []
+  autoCreatePanel: 1
 --- !u!114 &761969471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5546,7 +5549,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: da3666d2494da46ed96247902df8a385, type: 2}
+  - {fileID: 2100000, guid: b81e4f53fa85c30468dcc9756931f479, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10055,18 +10058,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelector
   characterPrefabs:
-  - {fileID: 1042453141147471712, guid: c0c9eedb489a8114ea5e450d6b08d96d, type: 3}
-  - {fileID: 3809715939648036246, guid: 3619cf0a3b1092348b24e9006a329f3f, type: 3}
-  - {fileID: 4282367219282069698, guid: 5bf77a30e6f77c24fbb2647089d429a8, type: 3}
-  - {fileID: 8590031770017322666, guid: 8278109f43b54c74c810d428e54c24f7, type: 3}
-  - {fileID: 1651526202208552503, guid: b213c86a4019f2d4eb15a25223cc3f22, type: 3}
+  - {fileID: 7909369869873242202, guid: 108ec00514d0f43eb8cd7c1250274465, type: 3}
+  - {fileID: 7587419919881208123, guid: 2e44719a74aa748d29bf09b8b369c325, type: 3}
+  - {fileID: 7168423811401278782, guid: 8c533eb31494e4c048b5d83a54c63ab0, type: 3}
+  - {fileID: 3038404796189636768, guid: 187217cb289de4a9e9f2cac76d5e8b73, type: 3}
+  - {fileID: 8706726477242790849, guid: 424f18c50a3b7454a865b421d2dc9eb2, type: 3}
   carouselCenter: {fileID: 0}
   characterSpacing: 2
   depthOffset: 0.5
   rotationSpeed: 5
   selectedScale: 1.2
   unselectedScale: 0.8
-  gameSceneName: NathanGame
+  gameSceneName: Test_full
 --- !u!4 &1854564421
 Transform:
   m_ObjectHideFlags: 0

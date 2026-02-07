@@ -129,11 +129,9 @@ MonoBehaviour:
   invalidMat: {fileID: 2100000, guid: cdfa73066d69a455b8e00a580e1ba981, type: 2}
   towerPrefabs:
   - {fileID: 3700715196704607379, guid: a1009afc8ec5a41ba8688b0e70873979, type: 3}
-  - {fileID: 3700715196704607379, guid: 4738c69a7518d46dba5f5548cca33e29, type: 3}
-  - {fileID: 3700715196704607379, guid: 18dbadfee7e044185b9ab6f58dbbb2fb, type: 3}
-  - {fileID: 3700715196704607379, guid: ad0a6756642de430bb8e8597b1e8d040, type: 3}
   - {fileID: 5120775498591660775, guid: e4dcf59af4bed4f64840526db5b3f8e7, type: 3}
   - {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
+  - {fileID: 3700715196704607379, guid: a28ed93bb0de64aa596217354019f62c, type: 3}
   towerRadius: 10
   towerHeightCheck: 1.5
   groundLayer:
@@ -230,10 +228,13 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 8
   rotationSpeed: 3
+  attackType: 0
   attackCooldown: 0.6
   weaponHitbox: {fileID: 0}
-  special1Cooldown: 0
-  special2Cooldown: 0
+  projectilePrefab: {fileID: 0}
+  shootPoint: {fileID: 0}
+  abilityScript: {fileID: 0}
+  ultimateScript: {fileID: 0}
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 5439676042332538603, guid: 108ec00514d0f43eb8cd7c1250274465, type: 3}
@@ -241,6 +242,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  knockbackDamping: 10
   isGrounded: 0
 --- !u!114 &157521178179546558
 MonoBehaviour:

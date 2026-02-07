@@ -17,16 +17,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Nathan.unity
     guid: e9d8d81e094aa4c439d553869b064085
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/NathanPlay.unity
     guid: d542e6ce5fd85094f9b766da6397f1f0
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/NathanChooseChar.unity
     guid: d2023efea367e5b41989e28b91b0aa7a
   - enabled: 0
     path: Assets/Scenes/NathanGame.unity
     guid: ce04ca2131e688e4188f8526e4096708
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Simon.unity
     guid: d94eea2ffb25498468d6fa17ed989a2e
   - enabled: 0

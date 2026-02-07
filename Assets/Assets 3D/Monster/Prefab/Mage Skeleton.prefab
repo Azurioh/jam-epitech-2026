@@ -1312,7 +1312,7 @@ Animator:
   m_GameObject: {fileID: 5332211782691112324}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b51442366f09e4ab6a82bf46d2e3a463, type: 2}
+  m_Controller: {fileID: 9100000, guid: 68645884cfa94433ca73a8a1b0d498b6, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -1488,6 +1488,11 @@ MonoBehaviour:
   weaponHitbox: {fileID: 0}
   projectilePrefab: {fileID: 8195572163558442535, guid: 26a9fb8c277cc489891771e41b48fcd9, type: 3}
   shootPoint: {fileID: 0}
+  knockbackDamping: 10
+  knockbackGroundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  knockbackGroundOffset: 0.05
   playerMask:
     serializedVersion: 2
     m_Bits: 64

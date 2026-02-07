@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3309159019296699308}
   - component: {fileID: 1003877790419294394}
+  - component: {fileID: 9014844416270601925}
+  - component: {fileID: 5821972598513055494}
   m_Layer: 0
   m_Name: RainArrow
   m_TagString: Untagged
@@ -46,11 +48,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
   speed: 25
-  damage: 15
   lifetime: 5
+--- !u!114 &9014844416270601925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6000649946685960263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332fe8b183bd84a56b0b8c6aaf69c857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageOnContact
+  damage: 50
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 16
+    m_Bits: 2048
+  destroyOnHit: 1
+  hitCooldown: 0.5
+--- !u!135 &5821972598513055494
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6000649946685960263}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.09
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6453161731809152041
 GameObject:
   m_ObjectHideFlags: 0
