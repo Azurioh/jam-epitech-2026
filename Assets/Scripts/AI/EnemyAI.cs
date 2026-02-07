@@ -22,9 +22,11 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private LayerMask towerMask;
     [SerializeField] private LayerMask wallMask;
 
+
+    [SerializeField] private Transform fallbackTarget;
     [Header("Fallback")]
     [Tooltip("Cible manuelle si aucune cible n'est trouvée (optionnel)")]
-    [SerializeField] private Transform fallbackTarget;
+    [SerializeField] public string fallbackTargetName;
     
     [Tooltip("Layer pour chercher automatiquement une fallback target si fallbackTarget n'est pas assigné")]
     [SerializeField] private LayerMask fallbackTargetMask;
@@ -49,7 +51,7 @@ public class EnemyAI : MonoBehaviour
     private readonly int hitHash = Animator.StringToHash("Hit");
     private readonly int deathHash = Animator.StringToHash("Death");
 
-    private int TargetMask => playerMask | towerMask;
+    private int TargetMask => playerMask | towerMask | wallMask;
     private int ObstacleMask => playerMask | towerMask | wallMask;
 
     public void Initialize(LayerMask playerLayer, LayerMask towerLayer, LayerMask wallLayer)
@@ -69,6 +71,13 @@ public class EnemyAI : MonoBehaviour
             Debug.LogError("EnemyAI requires a NavMeshAgent.", this);
         }
 
+        if (fallbackTarget == null) {
+            GameObject findObj = GameObject.Find(fallbackTargetName); 
+            if (findObj != null) 
+            {
+                fallbackTarget = findObj.transform;
+            }
+        }
         if (fallbackTarget == null && fallbackTargetMask != 0)
         {
             fallbackTarget = FindFallbackTargetFromLayer();
@@ -123,14 +132,42 @@ public class EnemyAI : MonoBehaviour
             _nextRetargetTime = Time.time + 0.35f;
         }
 
-        _currentTarget = ResolveBlockingTarget(_mainTarget) ?? _mainTarget ?? FindAttackableInRange();
+        if (_mainTarget != null)
+        {
+            _currentTarget = ResolveBlockingTarget(_mainTarget) ?? _mainTarget;
+        }
+        else
+        {
+            _currentTarget = null;
+        }
 
         if (_currentTarget == null || _agent == null)
         {
             if (_agent != null && fallbackTarget != null)
             {
-                _agent.isStopped = false;
-                _agent.SetDestination(fallbackTarget.position);
+                Debug.Log("No target found, fallback to: " + fallbackTarget.name);
+                Transform wallToAttack = FindWallTowardsTarget(fallbackTarget.position);
+                if (wallToAttack != null)
+                {
+                    float distanceToWall = Vector3.Distance(transform.position, wallToAttack.position);
+                    bool inAttackRange = distanceToWall <= attackRange;
+                    
+                    _agent.isStopped = inAttackRange;
+                    if (!inAttackRange)
+                    {
+                        Debug.Log("Moving towards wall: " + wallToAttack.name + " at distance: " + distanceToWall);
+                        _agent.SetDestination(wallToAttack.position);
+                    }
+                    else
+                    {
+                        TryAttack(wallToAttack);
+                    }
+                }
+                else
+                {
+                    _agent.isStopped = false;
+                    _agent.SetDestination(fallbackTarget.position);
+                }
             }
             else if (_agent != null)
             {
@@ -172,9 +209,9 @@ public class EnemyAI : MonoBehaviour
         switch (targetPriority)
         {
             case TargetPriority.PreferPlayers:
-                return GetNearestTarget(playerMask) ?? GetNearestTarget(towerMask);
+                return GetNearestTarget(playerMask) ?? GetNearestTarget(towerMask) ?? GetNearestTarget(wallMask);
             case TargetPriority.PreferTowers:
-                return GetNearestTarget(towerMask) ?? GetNearestTarget(playerMask);
+                return GetNearestTarget(towerMask) ?? GetNearestTarget(playerMask) ?? GetNearestTarget(wallMask);
             default:
                 return GetNearestTarget(TargetMask);
         }
@@ -256,8 +293,37 @@ public class EnemyAI : MonoBehaviour
         return best;
     }
 
+    private Transform FindWallTowardsTarget(Vector3 targetPosition)
+    {
+        // Chercher tous les murs dans un rayon de détection
+        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRadius * 100, fallbackTargetMask, QueryTriggerInteraction.Ignore);
+        Transform best = null;
+        float bestDist = float.MaxValue;
+        Debug.Log("Found " + hits.Length + " walls in detection radius.");
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Debug.Log("Checking wall: " + hits[i].name);
+            if (!TryGetDamageable(hits[i].transform, out _, out Transform root))
+            {
+                continue;
+            }
+
+            float distance = Vector3.Distance(transform.position, root.position);
+            
+            // Simplement prendre le mur le plus proche
+            if (distance < bestDist)
+            {
+                bestDist = distance;
+                best = root;
+            }
+        }
+
+        return best;
+    }
+
     private void TryAttack(Transform target)
     {
+        Debug.Log("Trying to attack: " + target.name);
         if (Time.time < _nextAttackTime)
         {
             return;
