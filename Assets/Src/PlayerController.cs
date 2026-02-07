@@ -11,6 +11,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Attack")]
     [SerializeField] private float attackCooldown = 0.8f;
+    [SerializeField] private DamageOnContact weaponHitbox;
 
     [Header("Special Attacks")]
     [SerializeField] private float special1Cooldown = 5f;
@@ -51,6 +52,7 @@ public class PlayerController : NetworkBehaviour
 
     // Attack
     private float lastAttackTime = -999f;
+    private float currentAttackDuration;
     private bool isAttacking;
 
     // Special attacks
@@ -218,8 +220,11 @@ public class PlayerController : NetworkBehaviour
             HandleGravity();
 
             // Reset attaque après cooldown
-            if (isAttacking && Time.time - lastAttackTime >= attackCooldown)
+            if (isAttacking && Time.time - lastAttackTime >= currentAttackDuration)
+            {
                 isAttacking = false;
+                if (weaponHitbox != null) weaponHitbox.DisableHitbox();
+            }
 
             // Synchroniser l'état d'animation sur le réseau
             networkAnimSpeed.Value = moveInput.magnitude;
@@ -309,7 +314,9 @@ public class PlayerController : NetworkBehaviour
         if (Time.time - lastAttackTime < attackCooldown) return;
 
         lastAttackTime = Time.time;
+        currentAttackDuration = attackCooldown;
         isAttacking = true;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(attackHash);
         AttackServerRpc();
     }
@@ -345,6 +352,8 @@ public class PlayerController : NetworkBehaviour
         lastSpecial1Time = Time.time;
         isAttacking = true;
         lastAttackTime = Time.time;
+        currentAttackDuration = special1Cooldown;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(special1Hash);
         Special1ServerRpc();
     }
@@ -374,6 +383,8 @@ public class PlayerController : NetworkBehaviour
         lastSpecial2Time = Time.time;
         isAttacking = true;
         lastAttackTime = Time.time;
+        currentAttackDuration = special2Cooldown;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(special2Hash);
         Special2ServerRpc();
     }

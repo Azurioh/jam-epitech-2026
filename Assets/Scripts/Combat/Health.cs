@@ -5,7 +5,7 @@ public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField] public float maxHealth = 100f;
     [SerializeField] private bool destroyOnDeath = true;
-    private float _currentHealth;
+    public float _currentHealth;
     private bool _preventSplit;
 
     public float CurrentHealth => _currentHealth;
