@@ -30,6 +30,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Aymeric.unity
     guid: 4baf724239f2d4443a52bf85e05da4b3
   - enabled: 0
+    path: Assets/Scenes/NathanNetwork.unity
+    guid: a0fabbd0ed93c304f83813660c10b5f8
+  - enabled: 0
     path: Assets/Scenes/full map.unity
     guid: 2b8c6e47674a05147a2088a879804338
   m_configObjects:

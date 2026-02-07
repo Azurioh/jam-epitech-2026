@@ -40,8 +40,7 @@ public class CastleInteraction : MonoBehaviour
     void OnTriggerExit(Collider other)
     {
         Debug.Log($"Trigger Exit détecté : {other.gameObject.name}");
-        
-        // Détecte quand un joueur sort de la zone
+
         if (other.CompareTag(playerTag))
         {
             playerInRange = false;
