@@ -2,6 +2,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class PlayerStats : NetworkBehaviour
 {
@@ -42,6 +43,27 @@ public class PlayerStats : NetworkBehaviour
         {
             Health.OnValueChanged -= (oldValue, newValue) => UpdateHUD();
             Gold.OnValueChanged -= (oldValue, newValue) => UpdateHUD();
+        }
+    }
+
+    // --- RACCOURCIS DE TEST (DEV ONLY) ---
+    void Update()
+    {
+        // Seulement pour le joueur local
+        if (!IsOwner) return;
+
+        // H = Perdre 10 HP (pour tester la healthbar)
+        if (Keyboard.current.hKey.wasPressedThisFrame)
+        {
+            TakeDamageServerRpc(10);
+            Debug.Log("[DEBUG] Raccourci H: -10 HP");
+        }
+
+        // G = Gagner 50 Gold (pour tester le glitch effect)
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            AddGoldServerRpc(50);
+            Debug.Log("[DEBUG] Raccourci G: +50 Gold");
         }
     }
 

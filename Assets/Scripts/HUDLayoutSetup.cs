@@ -23,16 +23,16 @@ public class HUDLayoutSetup : MonoBehaviour
     [ContextMenu("Apply Cyber Layout")]
     public void ApplyLayout()
     {
-        // 1. Setup Health Bar (Bottom Left)
+        // 1. Setup Health Bar (Bottom Right)
         if (healthBarRect != null)
         {
-            healthBarRect.anchorMin = new Vector2(0, 0);
-            healthBarRect.anchorMax = new Vector2(0, 0);
-            healthBarRect.pivot = new Vector2(0, 0);
+            healthBarRect.anchorMin = new Vector2(1, 0);
+            healthBarRect.anchorMax = new Vector2(1, 0);
+            healthBarRect.pivot = new Vector2(1, 0);
             
             // Decale la barre pour laisser la place à l'icone
-            float xPos = padding;
-            if (healthIconRect != null) xPos += iconSize + 10f; 
+            float xPos = -padding;
+            if (healthIconRect != null) xPos -= iconSize + 10f; 
 
             healthBarRect.anchoredPosition = new Vector2(xPos, padding);
             healthBarRect.sizeDelta = new Vector2(healthBarWidth, healthBarHeight);
@@ -40,13 +40,13 @@ public class HUDLayoutSetup : MonoBehaviour
             healthBarRect.localRotation = Quaternion.identity; 
         }
 
-        // 1b. Setup Health Icon
+        // 1b. Setup Health Icon (Bottom Right, after the bar)
         if (healthIconRect != null)
         {
-             healthIconRect.anchorMin = new Vector2(0, 0);
-             healthIconRect.anchorMax = new Vector2(0, 0);
-             healthIconRect.pivot = new Vector2(0, 0);
-             healthIconRect.anchoredPosition = new Vector2(padding, padding);
+             healthIconRect.anchorMin = new Vector2(1, 0);
+             healthIconRect.anchorMax = new Vector2(1, 0);
+             healthIconRect.pivot = new Vector2(1, 0);
+             healthIconRect.anchoredPosition = new Vector2(-padding, padding);
              healthIconRect.sizeDelta = new Vector2(iconSize, iconSize);
         }
 
@@ -61,33 +61,34 @@ public class HUDLayoutSetup : MonoBehaviour
             chaosBarRect.sizeDelta = new Vector2(chaosBarWidth, chaosBarHeight);
         }
 
-        // 3. Setup Gold Text (Top Right)
+        // 3. Setup Gold Text (Top Left)
         if (goldTextRect != null)
         {
-            goldTextRect.anchorMin = new Vector2(1, 1);
-            goldTextRect.anchorMax = new Vector2(1, 1);
-            goldTextRect.pivot = new Vector2(1, 1);
+            goldTextRect.anchorMin = new Vector2(0, 1);
+            goldTextRect.anchorMax = new Vector2(0, 1);
+            goldTextRect.pivot = new Vector2(0, 1);
             
-            goldTextRect.anchoredPosition = new Vector2(-padding, -padding);
+            // Decale le texte pour laisser la place à l'icone
+            float xPos = padding;
+            if (goldIconRect != null) xPos += iconSize + 10f;
+            goldTextRect.anchoredPosition = new Vector2(xPos, -padding);
             
             var tmp = goldTextRect.GetComponent<TextMeshProUGUI>();
             if (tmp != null)
             {
-                tmp.alignment = TextAlignmentOptions.Right;
+                tmp.alignment = TextAlignmentOptions.Left;
                 tmp.fontSize = 36;
             }
         }
 
-        // 3b. Setup Gold Icon
+        // 3b. Setup Gold Icon (Top Left, before the text)
         if (goldIconRect != null)
         {
-             goldIconRect.anchorMin = new Vector2(1, 1);
-             goldIconRect.anchorMax = new Vector2(1, 1);
-             goldIconRect.pivot = new Vector2(1, 1);
+             goldIconRect.anchorMin = new Vector2(0, 1);
+             goldIconRect.anchorMax = new Vector2(0, 1);
+             goldIconRect.pivot = new Vector2(0, 1);
              
-             // On positionne l'icone à gauche du texte (approximatif)
-             float textWidthApprox = 200f; 
-             goldIconRect.anchoredPosition = new Vector2(-padding - textWidthApprox, -padding);
+             goldIconRect.anchoredPosition = new Vector2(padding, -padding);
              goldIconRect.sizeDelta = new Vector2(iconSize, iconSize);
         }
 
