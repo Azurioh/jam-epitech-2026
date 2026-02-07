@@ -42,6 +42,27 @@ public class PlayerStats : NetworkBehaviour
         }
     }
 
+    // --- RACCOURCIS DE TEST (DEV ONLY) ---
+    void Update()
+    {
+        // Seulement pour le joueur local
+        if (!IsOwner) return;
+
+        // H = Perdre 10 HP (pour tester la healthbar)
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            TakeDamageServerRpc(10);
+            Debug.Log("[DEBUG] Raccourci H: -10 HP");
+        }
+
+        // G = Gagner 50 Gold (pour tester le glitch effect)
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            AddGoldServerRpc(50);
+            Debug.Log("[DEBUG] Raccourci G: +50 Gold");
+        }
+    }
+
     // --- FONCTIONS LOGIQUES (Côté Serveur uniquement pour la triche) ---
 
     // Pour tester, on peut appeler ça depuis un input ou une collision
