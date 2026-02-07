@@ -2301,6 +2301,10 @@ PrefabInstance:
       propertyPath: 'towerPrefabs.Array.data[5]'
       value: 
       objectReference: {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
+    - target: {fileID: 3568932750805525917, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: m_Actions
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5039108561582260776, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 446433074
@@ -2320,9 +2324,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6985161289305179619}
-    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 5087223148122466326}
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
@@ -2333,24 +2334,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
   m_PrefabInstance: {fileID: 8612665409149440909}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6985161289305179619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7909369869873242202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d0d78ec6227c9d4c86b77c1f8b92678, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  ShowTopMostFoldoutHeaderGroup: 1
-  maxHealth: 100
-  destroyOnDeath: 1
-  deathDelay: 2
-  _currentHealth:
-    m_InternalValue: 0
 --- !u!114 &5087223148122466326
 MonoBehaviour:
   m_ObjectHideFlags: 0
