@@ -11,7 +11,7 @@ public class HUDController : MonoBehaviour
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI goldText;
     public GameObject crosshair;
-    
+
     [Header("Chaos System")]
     public Slider stabilityBar;
     
@@ -48,7 +48,7 @@ public class HUDController : MonoBehaviour
         {
             healthBar.maxValue = 100;
             healthBar.value = health;
-            
+
             Image fillImage = healthBar.fillRect.GetComponent<Image>();
             if (fillImage != null)
             {
@@ -60,7 +60,11 @@ public class HUDController : MonoBehaviour
 
         if (healthText != null)
         {
-            healthText.text = health + " HP";
+            healthText.text = "HP: " + health.ToString();
+
+            // Petit plus : changer la couleur si low HP
+            if (health < 30) healthText.color = Color.red;
+            else healthText.color = Color.white;
         }
     }
 

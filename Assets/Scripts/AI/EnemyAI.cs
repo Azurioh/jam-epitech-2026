@@ -23,7 +23,11 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private LayerMask wallMask;
 
     [Header("Fallback")]
+    [Tooltip("Cible manuelle si aucune cible n'est trouvée (optionnel)")]
     [SerializeField] private Transform fallbackTarget;
+    
+    [Tooltip("Layer pour chercher automatiquement une fallback target si fallbackTarget n'est pas assigné")]
+    [SerializeField] private LayerMask fallbackTargetMask;
 
     [Header("References")]
     [SerializeField] private Transform eye;
@@ -37,6 +41,13 @@ public class EnemyAI : MonoBehaviour
     private int TargetMask => playerMask | towerMask;
     private int ObstacleMask => playerMask | towerMask | wallMask;
 
+    public void Initialize(LayerMask playerLayer, LayerMask towerLayer, LayerMask wallLayer)
+    {
+        playerMask = playerLayer;
+        towerMask = towerLayer;
+        wallMask = wallLayer;
+    }
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -44,6 +55,21 @@ public class EnemyAI : MonoBehaviour
         {
             Debug.LogError("EnemyAI requires a NavMeshAgent.", this);
         }
+
+        if (fallbackTarget == null && fallbackTargetMask != 0)
+        {
+            fallbackTarget = FindFallbackTargetFromLayer();
+        }
+    }
+
+    private Transform FindFallbackTargetFromLayer()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, 1000f, fallbackTargetMask);
+        if (hits.Length > 0)
+        {
+            return hits[0].transform;
+        }
+        return null;
     }
 
     private void Update()

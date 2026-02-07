@@ -6,12 +6,34 @@ public class PlayerNetworkMover : NetworkBehaviour
 {
     public float speed = 5f;
 
+    [SerializeField] private PlayerInput playerInput; // Référence au composant Player Input
+    // Si tu as un script "PlayerController" local (celui de ton screenshot 1), ajoute une référence aussi :
+    // [SerializeField] private PlayerController localController;
+
     public override void OnNetworkSpawn()
     {
+        // Si cet objet appartient à MOI (le joueur local)
         if (IsOwner)
         {
-            
             MoveToRandomPosition();
+            if (playerInput != null) playerInput.enabled = true;
+        }
+        else
+        {
+            // Si cet objet est un autre joueur (un fantôme/proxy)
+            // ON COUPE TOUT pour ne pas que mon clavier le contrôle
+            if (playerInput != null) playerInput.enabled = false;
+
+            // IMPORTANT : Désactiver aussi la caméra et l'AudioListener des autres (tu l'as déjà fait dans TowerSpawner, mais c'est bien de vérifier ici aussi)
+            var cam = GetComponentInChildren<Camera>();
+            if (cam != null) cam.enabled = false;
+
+            var audio = GetComponentInChildren<AudioListener>();
+            if (audio != null) audio.enabled = false;
+
+            // Si tu utilises le CharacterController pour la physique, désactive-le aussi sur les proxies pour éviter les conflits avec le NetworkTransform
+            var charController = GetComponent<CharacterController>();
+            if (charController != null) charController.enabled = false;
         }
     }
 
@@ -25,8 +47,8 @@ public class PlayerNetworkMover : NetworkBehaviour
     {
         if (!IsOwner) return;
 
+        // ... Le reste de ton code de déplacement est correct ...
         Vector3 moveDir = Vector3.zero;
-
         if (Keyboard.current != null)
         {
             if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveDir.z = +1f;
@@ -36,7 +58,6 @@ public class PlayerNetworkMover : NetworkBehaviour
         }
 
         transform.position += moveDir.normalized * speed * Time.deltaTime;
-
         // --- DEBUG POUR LE HUD ---
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {

@@ -9,7 +9,7 @@ using UnityEngine;
 public class NetworkUI : MonoBehaviour
 {
     private string joinCode = ""; // Le code que le Host donnera au Client
-    [SerializeField] private float uiScale = 2f;
+    [SerializeField] private float uiScale = 1f;
     [SerializeField] private int fontSize = 26;
     [SerializeField] private float buttonHeight = 60f;
     [SerializeField] private float labelHeight = 40f;
