@@ -170,7 +170,7 @@ public class EnemyAI : MonoBehaviour
             _agent.speed = _baseAgentSpeed * lagMultiplier;
         }
 
-        if (Time.time >= _nextRetargetTime)
+        if (Time.time >= _nextRetargetTime && _currentTarget == null)
         {
             _mainTarget = AcquireMainTarget();
             _nextRetargetTime = Time.time + 0.35f;
@@ -189,21 +189,23 @@ public class EnemyAI : MonoBehaviour
         {
             if (_agent != null && fallbackTarget != null)
             {
-                Debug.Log("No target found, fallback to: " + fallbackTarget.name);
+                // Debug.Log("No target found, fallback to: " + fallbackTarget.name);
                 Transform wallToAttack = FindWallTowardsTarget(fallbackTarget.position);
                 if (wallToAttack != null)
                 {
                     float distanceToWall = Vector3.Distance(transform.position, wallToAttack.position);
+                    // Debug.Log("Found wall to attack: " + wallToAttack.name + " at distance: " + distanceToWall);
                     bool inAttackRange = distanceToWall <= attackRange;
                     
-                    _agent.isStopped = inAttackRange;
                     if (!inAttackRange)
                     {
-                        Debug.Log("Moving towards wall: " + wallToAttack.name + " at distance: " + distanceToWall);
+                        _agent.isStopped = false;
                         _agent.SetDestination(wallToAttack.position);
+                        // Debug.Log($"Moving towards wall: {wallToAttack.name} at distance {distanceToWall}");
                     }
                     else
                     {
+                        _agent.isStopped = true;
                         TryAttack(wallToAttack);
                     }
                 }
@@ -355,17 +357,17 @@ public class EnemyAI : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, detectionRadius * 100, fallbackTargetMask, QueryTriggerInteraction.Ignore);
         Transform best = null;
         float bestDist = float.MaxValue;
-        Debug.Log("Found " + hits.Length + " walls in detection radius.");
+        // Debug.Log("Found " + hits.Length + " walls in detection radius.");
         for (int i = 0; i < hits.Length; i++)
         {
-            Debug.Log("Checking wall: " + hits[i].name);
+            // Debug.Log("Checking wall: " + hits[i].name + " distance to target: " + Vector3.Distance(hits[i].transform.position, targetPosition));
             if (!TryGetDamageable(hits[i].transform, out _, out Transform root))
             {
                 continue;
             }
-
             float distance = Vector3.Distance(transform.position, root.position);
-            
+            // Debug.Log("Wall " + root.name + " is damageable. Distance to target: " + Vector3.Distance(root.position, targetPosition) + " vs " + distance + "best: " + bestDist);
+
             // Simplement prendre le mur le plus proche
             if (distance < bestDist)
             {
@@ -379,7 +381,7 @@ public class EnemyAI : MonoBehaviour
 
     private void TryAttack(Transform target)
     {
-        Debug.Log("Trying to attack: " + target.name);
+        // Debug.Log("Trying to attack: " + target.name);
         if (Time.time < _nextAttackTime)
         {
             return;

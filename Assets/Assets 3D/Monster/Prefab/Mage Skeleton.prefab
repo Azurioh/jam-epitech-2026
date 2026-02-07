@@ -1455,7 +1455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2960168167
+  GlobalObjectIdHash: 3985895488
   InScenePlacedSourceGlobalObjectIdHash: 977067565
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1498,9 +1498,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   fallbackTarget: {fileID: 0}
+  fallbackTargetName: 
   fallbackTargetMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 4096
   eye: {fileID: 0}
   _animator: {fileID: 286000022509633183}
 --- !u!114 &2205964286086731098
