@@ -8,7 +8,6 @@ public class TowerDefense : NetworkBehaviour
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private float timeToLive = 30f; // Durée de vie de la tour en secondes
     [SerializeField] private bool isHealing = false;
-    [SerializeField] private float healAmount = 10f;
 
     [Header("References")]
     [SerializeField] private GameObject projectilePrefab; // Glisse le Prefab Projectile ici

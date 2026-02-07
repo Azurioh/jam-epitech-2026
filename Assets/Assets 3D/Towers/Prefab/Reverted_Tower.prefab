@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2033077497800455126, guid: a1009afc8ec5a41ba8688b0e70873979, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2740148039
+      value: 931993019
       objectReference: {fileID: 0}
     - target: {fileID: 3113905642819967550, guid: a1009afc8ec5a41ba8688b0e70873979, type: 3}
       propertyPath: isHealing

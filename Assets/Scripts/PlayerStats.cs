@@ -45,7 +45,7 @@ public class PlayerStats : NetworkBehaviour
     // --- FONCTIONS LOGIQUES (Côté Serveur uniquement pour la triche) ---
 
     // Pour tester, on peut appeler ça depuis un input ou une collision
-    [ServerRpc(RequireOwnership = false)] // N'importe qui peut demander à prendre des dégâts (collisions etc)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)] // N'importe qui peut demander à prendre des dégâts (collisions etc)
     public void TakeDamageServerRpc(int damage)
     {
         if (Health.Value > 0)
@@ -56,7 +56,7 @@ public class PlayerStats : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void AddGoldServerRpc(int amount)
     {
         Gold.Value += amount;

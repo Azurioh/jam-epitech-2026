@@ -18,11 +18,11 @@ public class ChaosManager : NetworkBehaviour
         if (IsOwner)
         {
             UpdateStabilityUI(Stability.Value);
-            
+
             Stability.OnValueChanged += (oldVal, newVal) => UpdateStabilityUI(newVal);
         }
     }
-    
+
     public override void OnNetworkDespawn()
     {
         if (IsOwner)
@@ -63,7 +63,7 @@ public class ChaosManager : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void IncreaseChaosServerRpc(float amount)
     {
         Stability.Value += amount;
