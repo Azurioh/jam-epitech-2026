@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class WaveSpawner : MonoBehaviour
+public class WaveSpawner : NetworkBehaviour
 {
     public enum EnemyType
     {
@@ -62,8 +63,12 @@ public class WaveSpawner : MonoBehaviour
     public int TotalWaves => waves.Count;
     public bool IsComplete => _currentWaveIndex >= waves.Count - 1 && _enemiesAlive == 0;
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+        
+        if (!IsServer) return; // Seul le serveur gère les waves
+        
         if (autoStart)
         {
             StartWaves();
@@ -72,6 +77,8 @@ public class WaveSpawner : MonoBehaviour
 
     public void StartWaves()
     {
+        if (!IsServer) return;
+        
         if (!_isSpawning && _currentWaveIndex < waves.Count - 1)
         {
             StartCoroutine(SpawnWavesRoutine());
@@ -120,6 +127,13 @@ public class WaveSpawner : MonoBehaviour
 
         Vector3 spawnPosition = GetSpawnPosition();
         GameObject enemy = Instantiate(prefab, spawnPosition, Quaternion.identity);
+        
+        // Spawn sur le réseau
+        NetworkObject networkObject = enemy.GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            networkObject.Spawn();
+        }
 
         EnemyAI ai = enemy.GetComponent<EnemyAI>();
         if (ai != null)
