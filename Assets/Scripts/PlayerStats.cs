@@ -1,0 +1,65 @@
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.Events;
+
+public class PlayerStats : NetworkBehaviour
+{
+    // Variables synchronisées sur le réseau
+    // NetworkVariableWritePermission.Server : seul le serveur peut modifier (sécurité)
+    public NetworkVariable<int> Health = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> Gold = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    public override void OnNetworkSpawn()
+    {
+        // Si c'est MON joueur local, je m'abonne aux changements pour mettre à jour l'UI
+        if (IsOwner)
+        {
+            // Initial UI Update
+            UpdateHUD();
+
+            // S'abonner aux changements de valeurs
+            Health.OnValueChanged += (oldValue, newValue) => UpdateHUD();
+            Gold.OnValueChanged += (oldValue, newValue) => UpdateHUD();
+        }
+    }
+
+    private void UpdateHUD()
+    {
+        // On vérifie que le HUDController existe (Singleton)
+        if (HUDController.Instance != null)
+        {
+            HUDController.Instance.UpdateHealth(Health.Value);
+            HUDController.Instance.UpdateGold(Gold.Value);
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (IsOwner)
+        {
+            Health.OnValueChanged -= (oldValue, newValue) => UpdateHUD();
+            Gold.OnValueChanged -= (oldValue, newValue) => UpdateHUD();
+        }
+    }
+
+    // --- FONCTIONS LOGIQUES (Côté Serveur uniquement pour la triche) ---
+
+    // Pour tester, on peut appeler ça depuis un input ou une collision
+    [ServerRpc(RequireOwnership = false)] // N'importe qui peut demander à prendre des dégâts (collisions etc)
+    public void TakeDamageServerRpc(int damage)
+    {
+        if (Health.Value > 0)
+        {
+            Health.Value -= damage;
+            if (Health.Value < 0) Health.Value = 0;
+            Debug.Log($"Player {OwnerClientId} took {damage} damage. HP: {Health.Value}");
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void AddGoldServerRpc(int amount)
+    {
+        Gold.Value += amount;
+        Debug.Log($"Player {OwnerClientId} received {amount} gold. Gold: {Gold.Value}");
+    }
+}

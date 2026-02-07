@@ -6,12 +6,11 @@ public class PlayerNetworkMover : NetworkBehaviour
 {
     public float speed = 5f;
 
-    // Cette fonction est appelée automatiquement quand l'objet apparaît sur le réseau
     public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
-            // On se déplace à une position aléatoire pour ne pas être sur les autres
+            
             MoveToRandomPosition();
         }
     }
@@ -37,5 +36,26 @@ public class PlayerNetworkMover : NetworkBehaviour
         }
 
         transform.position += moveDir.normalized * speed * Time.deltaTime;
+
+        // --- DEBUG POUR LE HUD ---
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            // test dégat
+            GetComponent<PlayerStats>().TakeDamageServerRpc(10);
+        }
+
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            // test gold
+            GetComponent<PlayerStats>().AddGoldServerRpc(50);
+        }
+
+        if (Keyboard.current.kKey.wasPressedThisFrame)
+        {
+             if (ChaosManager.Instance != null)
+             {
+                 ChaosManager.Instance.IncreaseChaos(10f);
+             }
+        }
     }
 }
