@@ -47,11 +47,12 @@ public class DamageOnContact : MonoBehaviour
         if (lastHitTime.TryGetValue(target, out float lastTime) && Time.time - lastTime < hitCooldown)
             return;
 
-        Health health = target.GetComponent<Health>();
-        if (health != null)
+        IDamageable damageable = target.GetComponentInParent<IDamageable>();
+        if (damageable != null)
         {
             lastHitTime[target] = Time.time;
-            health.TakeDamage(damage);
+            damageable.TakeDamage(damage);
+            Debug.Log("Dealt " + damage + " damage to " + target.name);
             if (destroyOnHit)
                 Destroy(gameObject);
         }
