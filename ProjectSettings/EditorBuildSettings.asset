@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Nathan.unity
     guid: e9d8d81e094aa4c439d553869b064085
+  - enabled: 1
+    path: Assets/Scenes/Ewan.unity
+    guid: 5ddbce8bf911d4551b70ac893369d453
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
