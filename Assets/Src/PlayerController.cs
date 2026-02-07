@@ -451,16 +451,12 @@ public class PlayerController : NetworkBehaviour
         Vector3 spawnPos = shootPoint != null ? shootPoint.position : transform.position + Vector3.up * 0.8f;
         Vector3 direction = transform.forward;
 
-        // Tirer vers le centre de la caméra (visée 3ème personne)
+        // Tirer depuis le player dans la direction où la caméra regarde
         Transform cam = (playerCamera != null) ? playerCamera.transform : Camera.main.transform;
-        if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, 100f))
-        {
-            direction = (hit.point - spawnPos).normalized;
-        }
-        else
-        {
-            direction = (cam.position + cam.forward * 100f - spawnPos).normalized;
-        }
+        Vector3 aimDir = cam.forward;
+        aimDir.y = 0f;
+        aimDir.Normalize();
+        direction = aimDir;
 
         ShootServerRpc(spawnPos, Quaternion.LookRotation(direction));
     }
