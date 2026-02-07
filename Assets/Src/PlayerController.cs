@@ -81,6 +81,7 @@ public class PlayerController : NetworkBehaviour
 
     void OnEnable()
     {
+        PauseMenuManager.canPaused = true;
         inputActions.Player.Enable();
         inputActions.Player.Jump.performed += OnJumpPerformed;
         inputActions.Player.Attack.performed += OnAttackPerformed;
@@ -118,20 +119,16 @@ public class PlayerController : NetworkBehaviour
         special1Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_1");
         special2Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_2");
 
-        // Téléporter au spawn point
-        if (IsServer)
+        GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        if (spawns.Length > 0)
         {
-            GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
-            if (spawns.Length > 0)
-            {
-                int index = (int)(OwnerClientId % (ulong)spawns.Length);
-                // Désactiver le CharacterController sinon transform.position est ignoré
-                var cc = GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
-                transform.position = spawns[index].transform.position;
-                transform.rotation = spawns[index].transform.rotation;
-                if (cc != null) cc.enabled = true;
-            }
+            int index = (int)(OwnerClientId % (ulong)spawns.Length);
+            // Désactiver le CharacterController sinon transform.position est ignoré
+            var cc = GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            transform.position = spawns[index].transform.position;
+            transform.rotation = spawns[index].transform.rotation;
+            if (cc != null) cc.enabled = true;
         }
 
         playerCamera = GetComponentInChildren<Camera>();
@@ -261,14 +258,15 @@ public class PlayerController : NetworkBehaviour
     void Update()
     {
         if (IsOwner)
-        {
+        { 
+            HandleGravity();
+            if (PauseMenuManager.isPaused) return;
             // Lire l'input de mouvement chaque frame
             moveInput = inputActions.Player.Move.ReadValue<Vector2>();
             moveInput = Vector2.ClampMagnitude(moveInput, 1f);
 
             HandleGroundCheck();
             HandleMovement();
-            HandleGravity();
 
             // Reset attaque après cooldown
             if (isAttacking && Time.time - lastAttackTime >= currentAttackDuration)
@@ -363,6 +361,7 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner) return;
         if (isAttacking) return;
         if (Time.time - lastAttackTime < attackCooldown) return;
+        if (PauseMenuManager.isPaused) return;
 
         lastAttackTime = Time.time;
         currentAttackDuration = attackCooldown;

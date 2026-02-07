@@ -1,14 +1,14 @@
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using Unity.Services.Authentication; // Pour se connecter (Anonyme)
-using Unity.Services.Core;           // Pour initialiser les services
-using Unity.Services.Relay;          // Pour utiliser le Relay
-using Unity.Services.Relay.Models;   // Pour les données d'allocation
+using Unity.Services.Authentication;
+using Unity.Services.Core;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 
 public class NetworkUI : MonoBehaviour
 {
-    private string joinCode = ""; // Le code que le Host donnera au Client
+    public static string joinCode = "?";
     [SerializeField] private float uiScale = 1f;
     [SerializeField] private int fontSize = 26;
     [SerializeField] private float buttonHeight = 60f;
@@ -34,8 +34,7 @@ public class NetworkUI : MonoBehaviour
     {
         try
         {
-            // Demande à Unity une allocation pour 3 joueurs (Host + 3 max)
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(7);
 
             // Récupère le CODE (ex: "XJ92") à partager
             joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
@@ -121,20 +120,6 @@ public class NetworkUI : MonoBehaviour
             if (GUILayout.Button("JOIN (Rejoindre avec le code)", _buttonStyle, GUILayout.Height(buttonHeight)))
             {
                 JoinRelay(joinCode);
-            }
-        }
-        else
-        {
-            // Si on est connecté, on affiche le code pour le donner aux potes
-            GUILayout.Label("Mode: " + (NetworkManager.Singleton.IsHost ? "Host" : "Client"), _labelStyle, GUILayout.Height(labelHeight));
-            if (NetworkManager.Singleton.IsHost)
-            {
-                GUILayout.Label("CODE À DONNER : " + joinCode, _labelStyle, GUILayout.Height(labelHeight));
-                // Petit bouton pratique pour copier le code
-                if (GUILayout.Button("Copier le Code", _buttonStyle, GUILayout.Height(buttonHeight)))
-                {
-                    GUIUtility.systemCopyBuffer = joinCode;
-                }
             }
         }
 

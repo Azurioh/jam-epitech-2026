@@ -1,39 +1,59 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem; // <-- Ajoute ceci !
+using UnityEngine.InputSystem;
+using TMPro;
 
 public class PauseMenuManager : MonoBehaviour
 {
     public GameObject pauseMenuUI;
+    [SerializeField] private TextMeshProUGUI codeTextDisplay;
+    public static bool canPaused = false;
     public static bool isPaused = false;
+
+    void Start()
+    {
+        pauseMenuUI.SetActive(false);
+        isPaused = false;
+    }
 
     void Update()
     {
-        // La nouvelle façon de détecter une touche (sans configurer d'Action)
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
+        if (canPaused && Keyboard.current.escapeKey.wasPressedThisFrame) {
             if (isPaused)
                 Resume();
             else
-                Pause();
+                OpenMenu();
+        }
+
+        if (isPaused && codeTextDisplay != null) {
+            Debug.Log("Code: " + NetworkUI.joinCode);
+            codeTextDisplay.text = "Code: " + NetworkUI.joinCode;
         }
     }
 
-    // Le reste des fonctions (Resume, Pause, Quit) reste identique
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
         isPaused = false;
+        
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
+    
+    public void CopyCode()
+    {
+        GUIUtility.systemCopyBuffer = NetworkUI.joinCode;
+    }
 
-    public void Pause()
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+    void OpenMenu()
     {
         pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;
         isPaused = true;
+        
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
