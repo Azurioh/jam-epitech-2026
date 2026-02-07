@@ -30,6 +30,7 @@ public class NetworkUI : MonoBehaviour
     private GUIStyle _smallButtonStyle;
     
     private bool _stylesInitialized = false;
+    private int _lastScreenHeight = 0;
 
     async void Start()
     {
@@ -100,36 +101,45 @@ public class NetworkUI : MonoBehaviour
         return texture;
     }
 
+    private int S(int value)
+    {
+        float scale = Screen.height / 1080f;
+        return Mathf.RoundToInt(value * scale);
+    }
+
     private void InitStyles()
     {
         if (_panelBackground == null)
         {
             CreateTextures();
         }
-        
+
+        if (_stylesInitialized && Screen.height == _lastScreenHeight) return;
+        _lastScreenHeight = Screen.height;
+
         // Panel style
         _panelStyle = new GUIStyle();
         _panelStyle.normal.background = _panelBackground;
-        _panelStyle.padding = new RectOffset(30, 30, 30, 30);
-        
+        _panelStyle.padding = new RectOffset(S(30), S(30), S(30), S(30));
+
         // Title style
         _titleStyle = new GUIStyle();
-        _titleStyle.fontSize = 42;
+        _titleStyle.fontSize = S(42);
         _titleStyle.fontStyle = FontStyle.Bold;
         _titleStyle.alignment = TextAnchor.MiddleCenter;
         _titleStyle.normal.textColor = Color.white;
-        _titleStyle.margin = new RectOffset(0, 0, 0, 20);
-        
+        _titleStyle.margin = new RectOffset(0, 0, 0, S(20));
+
         // Label style
         _labelStyle = new GUIStyle();
-        _labelStyle.fontSize = 20;
+        _labelStyle.fontSize = S(20);
         _labelStyle.alignment = TextAnchor.MiddleLeft;
         _labelStyle.normal.textColor = new Color(0.8f, 0.8f, 0.85f, 1f);
-        _labelStyle.margin = new RectOffset(0, 0, 10, 5);
-        
+        _labelStyle.margin = new RectOffset(0, 0, S(10), S(5));
+
         // Button style
         _buttonStyle = new GUIStyle();
-        _buttonStyle.fontSize = 24;
+        _buttonStyle.fontSize = S(24);
         _buttonStyle.fontStyle = FontStyle.Bold;
         _buttonStyle.alignment = TextAnchor.MiddleCenter;
         _buttonStyle.normal.background = _buttonNormal;
@@ -138,43 +148,43 @@ public class NetworkUI : MonoBehaviour
         _buttonStyle.hover.textColor = Color.white;
         _buttonStyle.active.background = _buttonHover;
         _buttonStyle.active.textColor = new Color(0.9f, 0.9f, 1f, 1f);
-        _buttonStyle.padding = new RectOffset(20, 20, 15, 15);
-        _buttonStyle.margin = new RectOffset(0, 0, 10, 10);
-        
+        _buttonStyle.padding = new RectOffset(S(20), S(20), S(15), S(15));
+        _buttonStyle.margin = new RectOffset(0, 0, S(10), S(10));
+
         // Small button style
         _smallButtonStyle = new GUIStyle(_buttonStyle);
-        _smallButtonStyle.fontSize = 18;
-        _smallButtonStyle.padding = new RectOffset(15, 15, 10, 10);
-        
+        _smallButtonStyle.fontSize = S(18);
+        _smallButtonStyle.padding = new RectOffset(S(15), S(15), S(10), S(10));
+
         // Input style
         _inputStyle = new GUIStyle();
-        _inputStyle.fontSize = 28;
+        _inputStyle.fontSize = S(28);
         _inputStyle.fontStyle = FontStyle.Bold;
         _inputStyle.alignment = TextAnchor.MiddleCenter;
         _inputStyle.normal.background = _inputBackground;
         _inputStyle.normal.textColor = Color.white;
         _inputStyle.focused.background = _inputBackground;
         _inputStyle.focused.textColor = new Color(0.5f, 1f, 0.8f, 1f);
-        _inputStyle.padding = new RectOffset(15, 15, 15, 15);
-        _inputStyle.margin = new RectOffset(0, 0, 5, 15);
-        
+        _inputStyle.padding = new RectOffset(S(15), S(15), S(15), S(15));
+        _inputStyle.margin = new RectOffset(0, 0, S(5), S(15));
+
         // Code display style
         _codeDisplayStyle = new GUIStyle();
-        _codeDisplayStyle.fontSize = 48;
+        _codeDisplayStyle.fontSize = S(48);
         _codeDisplayStyle.fontStyle = FontStyle.Bold;
         _codeDisplayStyle.alignment = TextAnchor.MiddleCenter;
         _codeDisplayStyle.normal.background = _accentTexture;
         _codeDisplayStyle.normal.textColor = new Color(0.2f, 1f, 0.7f, 1f);
-        _codeDisplayStyle.padding = new RectOffset(20, 20, 20, 20);
-        _codeDisplayStyle.margin = new RectOffset(0, 0, 10, 10);
-        
+        _codeDisplayStyle.padding = new RectOffset(S(20), S(20), S(20), S(20));
+        _codeDisplayStyle.margin = new RectOffset(0, 0, S(10), S(10));
+
         // Status style
         _statusStyle = new GUIStyle();
-        _statusStyle.fontSize = 16;
+        _statusStyle.fontSize = S(16);
         _statusStyle.alignment = TextAnchor.MiddleCenter;
         _statusStyle.normal.textColor = new Color(0.6f, 0.6f, 0.7f, 1f);
-        _statusStyle.margin = new RectOffset(0, 0, 20, 0);
-        
+        _statusStyle.margin = new RectOffset(0, 0, S(20), 0);
+
         _stylesInitialized = true;
     }
 
@@ -244,55 +254,67 @@ public class NetworkUI : MonoBehaviour
     void OnGUI()
     {
         if (NetworkManager.Singleton == null) return;
-        
+
         InitStyles();
 
-        float panelWidth = 500f;
-        float panelHeight = NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer ? 350f : 420f;
-        float x = (Screen.width - panelWidth) / 2f;
-        float y = (Screen.height - panelHeight) / 2f;
+        bool isInGame = NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsServer;
 
-        GUILayout.BeginArea(new Rect(x, y, panelWidth, panelHeight), _panelStyle);
-
-        GUILayout.Label("MULTIJOUEUR", _titleStyle);
-        
-        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
+        if (!isInGame)
         {
-            GUILayout.Space(10);
-            
+            // Menu principal centré
+            float panelWidth = S(500);
+            float panelHeight = S(420);
+            float x = (Screen.width - panelWidth) / 2f;
+            float y = (Screen.height - panelHeight) / 2f;
+
+            GUILayout.BeginArea(new Rect(x, y, panelWidth, panelHeight), _panelStyle);
+
+            GUILayout.Label("MULTIJOUEUR", _titleStyle);
+
+            GUILayout.Space(S(10));
+
             GUI.enabled = !isConnecting;
-            if (GUILayout.Button("CRÉER UNE PARTIE", _buttonStyle, GUILayout.Height(60)))
+            if (GUILayout.Button("CRÉER UNE PARTIE", _buttonStyle, GUILayout.Height(S(60))))
             {
                 CreateRelay();
             }
-            
-            
-            GUILayout.Space(20);
-            
-            
+
+            GUILayout.Space(S(20));
+
             GUILayout.Label("Entrer le code de la partie :", _labelStyle);
-            joinCode = GUILayout.TextField(joinCode.ToUpper(), 6, _inputStyle, GUILayout.Height(50));
-            
-            if (GUILayout.Button("REJOINDRE", _buttonStyle, GUILayout.Height(60)))
+            joinCode = GUILayout.TextField(joinCode.ToUpper(), 6, _inputStyle, GUILayout.Height(S(50)));
+
+            if (GUILayout.Button("REJOINDRE", _buttonStyle, GUILayout.Height(S(60))))
             {
                 JoinRelay(joinCode);
             }
             GUI.enabled = true;
+
+            GUILayout.EndArea();
         }
         else
         {
+            // Panel en haut à droite une fois en jeu
+            float panelWidth = S(320);
+            float panelHeight = S(250);
+            float margin = S(20);
+            float x = Screen.width - panelWidth - margin;
+            float y = margin;
+
+            GUILayout.BeginArea(new Rect(x, y, panelWidth, panelHeight), _panelStyle);
+
             string mode = NetworkManager.Singleton.IsHost ? "HOST" : "CLIENT";
-            GUILayout.Label(mode, new GUIStyle(_titleStyle) { fontSize = 28 });
-            
+            GUILayout.Label(mode, new GUIStyle(_titleStyle) { fontSize = S(22) });
+
             if (NetworkManager.Singleton.IsHost)
             {
-                GUILayout.Space(10);
-                GUILayout.Label("Partage ce code avec tes amis :", _labelStyle);
-                
-                GUILayout.Label(joinCode, _codeDisplayStyle, GUILayout.Height(80));
-                
+                GUILayout.Space(S(5));
+                GUILayout.Label("Code de la partie :", new GUIStyle(_labelStyle) { fontSize = S(16) });
+
+                GUILayout.Label(joinCode, new GUIStyle(_codeDisplayStyle) { fontSize = S(36) }, GUILayout.Height(S(55)));
+
                 string copyText = codeCopied ? "COPIÉ !" : "COPIER LE CODE";
-                if (GUILayout.Button(copyText, _smallButtonStyle, GUILayout.Height(45)))
+                if (GUILayout.Button(copyText, _smallButtonStyle, GUILayout.Height(S(35))))
                 {
                     GUIUtility.systemCopyBuffer = joinCode;
                     codeCopied = true;
@@ -301,12 +323,11 @@ public class NetworkUI : MonoBehaviour
             }
             else
             {
-                GUILayout.Space(20);
-                GUILayout.Label("Connecté à la partie !", new GUIStyle(_labelStyle) { alignment = TextAnchor.MiddleCenter, fontSize = 24 });
+                GUILayout.Space(S(10));
+                GUILayout.Label("Connecté !", new GUIStyle(_labelStyle) { alignment = TextAnchor.MiddleCenter, fontSize = S(18) });
             }
+
+            GUILayout.EndArea();
         }
-
-
-        GUILayout.EndArea();
     }
 }
