@@ -87,4 +87,24 @@ public class PlayerStats : NetworkBehaviour
         Gold.Value += amount;
         Debug.Log($"Player {OwnerClientId} received {amount} gold. Gold: {Gold.Value}");
     }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void SpendGoldServerRpc(int amount)
+    {
+        SpendGold(amount);
+    }
+
+    /// <summary>
+    /// Déduit de l'or côté serveur. Peut être appelé directement depuis un autre script serveur.
+    /// </summary>
+    public bool SpendGold(int amount)
+    {
+        if (Gold.Value >= amount)
+        {
+            Gold.Value -= amount;
+            Debug.Log($"Player {OwnerClientId} spent {amount} gold. Gold: {Gold.Value}");
+            return true;
+        }
+        return false;
+    }
 }

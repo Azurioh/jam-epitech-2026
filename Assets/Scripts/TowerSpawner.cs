@@ -24,6 +24,7 @@ public class TowerSpawner : NetworkBehaviour
     private Renderer[] ghostRenderers;
     private bool isBuildMode = false;
     private int selectedTowerIndex = 0; // Index de la tour actuellement sélectionnée
+    private PlayerStats playerStats;
 
     // La caméra est maintenant gérée entièrement par PlayerController
     public override void OnNetworkSpawn()
@@ -33,6 +34,9 @@ public class TowerSpawner : NetworkBehaviour
         {
             playerCamera = GetComponentInChildren<Camera>();
         }
+
+        // Récupérer le PlayerStats du joueur
+        playerStats = GetComponent<PlayerStats>();
     }
 
     void Update()
@@ -44,7 +48,6 @@ public class TowerSpawner : NetworkBehaviour
 
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
-            Debug.Log("Build mode toggled");
             ToggleBuildMode();
         }
 
@@ -174,11 +177,8 @@ public class TowerSpawner : NetworkBehaviour
         Ray ray = playerCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
-        Debug.Log("Ray: " + ray);
-
         if (Physics.Raycast(ray, out hit, 100f, groundLayer))
         {
-            Debug.Log("Hit ground at: " + hit.point);
             // POSITION EXACTE (Plus de Grid !)
             Vector3 targetPos = hit.point;
 
@@ -187,19 +187,41 @@ public class TowerSpawner : NetworkBehaviour
 
             // Vérifie si la position est bloquée par un obstacle OU une autre tour
             bool isBlocked = IsPositionBlocked(targetPos);
-            UpdateGhostColor(!isBlocked);
+            bool canAfford = CanAffordTower();
+            bool canPlace = !isBlocked && canAfford;
+            UpdateGhostColor(canPlace);
 
-            if (Mouse.current.leftButton.wasPressedThisFrame && !isBlocked)
+            if (Mouse.current.leftButton.wasPressedThisFrame && canPlace)
             {
                 BuildTowerServerRpc(targetPos, selectedTowerIndex);
             }
         }
         else
         {
-            Debug.Log("Did not hit ground");
             // Si on pointe le ciel ou hors du sol, on cache le fantôme
             currentGhost.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// Retourne le prix de la tour actuellement sélectionnée
+    /// </summary>
+    int GetSelectedTowerPrice()
+    {
+        GameObject prefab = GetSelectedTowerPrefab();
+        if (prefab == null) return int.MaxValue;
+        TowerDefense towerDef = prefab.GetComponent<TowerDefense>();
+        if (towerDef == null) return 0;
+        return towerDef.price;
+    }
+
+    /// <summary>
+    /// Vérifie si le joueur a assez d'or pour la tour sélectionnée
+    /// </summary>
+    bool CanAffordTower()
+    {
+        if (playerStats == null) return false;
+        return playerStats.Gold.Value >= GetSelectedTowerPrice();
     }
 
     /// <summary>
@@ -246,9 +268,20 @@ public class TowerSpawner : NetworkBehaviour
         if (towerPrefabs == null || towerIndex < 0 || towerIndex >= towerPrefabs.Length) return;
         if (towerPrefabs[towerIndex] == null) return;
 
-        // Vérification côté serveur
+        // Vérification côté serveur (position + gold)
+        int towerPrice = towerPrefabs[towerIndex].GetComponent<TowerDefense>() != null
+            ? towerPrefabs[towerIndex].GetComponent<TowerDefense>().price
+            : 0;
+
+        // Récupérer le PlayerStats du joueur qui a fait la requête
+        PlayerStats requesterStats = NetworkManager.Singleton.ConnectedClients[OwnerClientId].PlayerObject.GetComponent<PlayerStats>();
+        if (requesterStats == null || requesterStats.Gold.Value < towerPrice) return;
+
         if (!IsPositionBlocked(position))
         {
+            // Déduire l'or via PlayerStats (sur son propre NetworkBehaviour)
+            if (!requesterStats.SpendGold(towerPrice)) return;
+
             GameObject newTower = Instantiate(towerPrefabs[towerIndex], position, Quaternion.identity);
 
             // Assigner le tag "Tower" à la tour (pour la détection de collision future)

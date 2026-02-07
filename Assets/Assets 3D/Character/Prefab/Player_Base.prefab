@@ -131,14 +131,14 @@ MonoBehaviour:
   - {fileID: 3700715196704607379, guid: 18dbadfee7e044185b9ab6f58dbbb2fb, type: 3}
   - {fileID: 3700715196704607379, guid: ad0a6756642de430bb8e8597b1e8d040, type: 3}
   - {fileID: 5120775498591660775, guid: e4dcf59af4bed4f64840526db5b3f8e7, type: 3}
-  towerRadius: 2
+  towerRadius: 10
   towerHeightCheck: 1.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 3264
+    m_Bits: 1152
   playerCamera: {fileID: 0}
 --- !u!114 &3568932750805525917
 MonoBehaviour:
