@@ -1117,7 +1117,7 @@ MonoBehaviour:
   damage: 25
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 4160
   destroyOnHit: 0
   hitCooldown: 0.5
 --- !u!1 &4484477781511426223
@@ -2041,7 +2041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1593796656
+  GlobalObjectIdHash: 2831586406
   InScenePlacedSourceGlobalObjectIdHash: 977067565
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2079,11 +2079,12 @@ MonoBehaviour:
     m_Bits: 128
   wallMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   fallbackTarget: {fileID: 0}
+  fallbackTargetName: GameObject
   fallbackTargetMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 4096
   eye: {fileID: 0}
   _animator: {fileID: 6614721580407520373}
 --- !u!114 &3843027062568723531

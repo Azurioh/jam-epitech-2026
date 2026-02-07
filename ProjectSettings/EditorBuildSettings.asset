@@ -41,6 +41,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/full map.unity
     guid: 2b8c6e47674a05147a2088a879804338
+  - enabled: 1
+    path: Assets/Scenes/Test_full.unity
+    guid: 7a006c407c7527f4d92c3ac4f3d7b5d3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     guid: {fileID: 0}

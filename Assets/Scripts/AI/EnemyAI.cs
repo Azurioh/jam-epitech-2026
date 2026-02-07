@@ -30,15 +30,22 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform shootPoint;
 
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDamping = 10f;
+    [SerializeField] private LayerMask knockbackGroundMask = ~0;
+    [SerializeField] private float knockbackGroundOffset = 0.05f;
+
     [Header("Layers")]
     [SerializeField] private LayerMask playerMask;
     [SerializeField] private LayerMask towerMask;
     [SerializeField] private LayerMask wallMask;
 
+
+    [SerializeField] private Transform fallbackTarget;
     [Header("Fallback")]
     [Tooltip("Cible manuelle si aucune cible n'est trouvée (optionnel)")]
-    [SerializeField] private Transform fallbackTarget;
-
+    [SerializeField] public string fallbackTargetName;
+    
     [Tooltip("Layer pour chercher automatiquement une fallback target si fallbackTarget n'est pas assigné")]
     [SerializeField] private LayerMask fallbackTargetMask;
 
@@ -54,6 +61,10 @@ public class EnemyAI : MonoBehaviour
     private float _nextRetargetTime;
     private float _baseAgentSpeed;
 
+    private Vector3 _knockbackVelocity;
+    private float _knockbackTime;
+    private bool _knockbackStoppedAgent;
+
     private Health _health;
     private LagEffectReceiver _lagReceiver;
 
@@ -64,7 +75,7 @@ public class EnemyAI : MonoBehaviour
     private readonly int hitHash = Animator.StringToHash("Hit");
     private readonly int deathHash = Animator.StringToHash("Death");
 
-    private int TargetMask => playerMask | towerMask;
+    private int TargetMask => playerMask | towerMask | wallMask;
     private int ObstacleMask => playerMask | towerMask | wallMask;
 
     public void Initialize(LayerMask playerLayer, LayerMask towerLayer, LayerMask wallLayer)
@@ -89,6 +100,13 @@ public class EnemyAI : MonoBehaviour
             _baseAgentSpeed = _agent.speed;
         }
 
+        if (fallbackTarget == null) {
+            GameObject findObj = GameObject.Find(fallbackTargetName); 
+            if (findObj != null) 
+            {
+                fallbackTarget = findObj.transform;
+            }
+        }
         if (fallbackTarget == null && fallbackTargetMask != 0)
         {
             fallbackTarget = FindFallbackTargetFromLayer();
@@ -116,7 +134,7 @@ public class EnemyAI : MonoBehaviour
         {
             _isDead = true;
             _animator.SetTrigger(deathHash);
-            if (_agent != null) _agent.isStopped = true;
+            if (_agent != null && _agent.isOnNavMesh) _agent.isStopped = true;
             enabled = false;
         }
         else if (newValue < oldValue)
@@ -139,6 +157,13 @@ public class EnemyAI : MonoBehaviour
     {
         bool isLagged = _lagReceiver != null && _lagReceiver.IsLagged;
         float lagMultiplier = isLagged ? _lagReceiver.GetSpeedMultiplier() : 1f;
+        float deltaTime = Time.deltaTime;
+
+        if (HandleKnockback(deltaTime))
+        {
+            UpdateAnimatorSpeed();
+            return;
+        }
 
         if (_animator != null)
         {
@@ -156,7 +181,7 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        if (_agent != null)
+        if (_agent != null && _agent.isOnNavMesh)
         {
             _agent.speed = _baseAgentSpeed * lagMultiplier;
         }
@@ -167,16 +192,44 @@ public class EnemyAI : MonoBehaviour
             _nextRetargetTime = Time.time + 0.35f;
         }
 
-        _currentTarget = ResolveBlockingTarget(_mainTarget) ?? _mainTarget ?? FindAttackableInRange();
-
-        if (_currentTarget == null || _agent == null)
+        if (_mainTarget != null)
         {
-            if (_agent != null && fallbackTarget != null)
+            _currentTarget = ResolveBlockingTarget(_mainTarget) ?? _mainTarget;
+        }
+        else
+        {
+            _currentTarget = null;
+        }
+
+        if (_currentTarget == null || _agent == null || !_agent.isOnNavMesh)
+        {
+            if (_agent != null && _agent.isOnNavMesh && fallbackTarget != null)
             {
-                _agent.isStopped = false;
-                _agent.SetDestination(fallbackTarget.position);
+                Debug.Log("No target found, fallback to: " + fallbackTarget.name);
+                Transform wallToAttack = FindWallTowardsTarget(fallbackTarget.position);
+                if (wallToAttack != null)
+                {
+                    float distanceToWall = Vector3.Distance(transform.position, wallToAttack.position);
+                    bool inAttackRange = distanceToWall <= attackRange;
+                    
+                    _agent.isStopped = inAttackRange;
+                    if (!inAttackRange)
+                    {
+                        Debug.Log("Moving towards wall: " + wallToAttack.name + " at distance: " + distanceToWall);
+                        _agent.SetDestination(wallToAttack.position);
+                    }
+                    else
+                    {
+                        TryAttack(wallToAttack);
+                    }
+                }
+                else
+                {
+                    _agent.isStopped = false;
+                    _agent.SetDestination(fallbackTarget.position);
+                }
             }
-            else if (_agent != null)
+            else if (_agent != null && _agent.isOnNavMesh)
             {
                 _agent.isStopped = true;
             }
@@ -216,11 +269,74 @@ public class EnemyAI : MonoBehaviour
             weaponHitbox.DisableHitbox();
         }
 
-        if (_animator != null && _agent != null)
+        if (_animator != null && _agent != null && _agent.isOnNavMesh)
         {
             float speed = _agent.velocity.magnitude / _agent.speed;
             _animator.SetFloat(speedHash, speed);
         }
+    }
+
+    private void UpdateAnimatorSpeed()
+    {
+        if (_animator == null || _agent == null || !_agent.isOnNavMesh) return;
+
+        float speed = _agent.velocity.magnitude / _agent.speed;
+        _animator.SetFloat(speedHash, speed);
+    }
+
+    private bool HandleKnockback(float deltaTime)
+    {
+        if (_knockbackTime <= 0f) return false;
+
+        _knockbackTime -= deltaTime;
+        float damp = Mathf.Clamp01(knockbackDamping * deltaTime);
+        _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, damp);
+
+        if (_agent != null && _agent.isOnNavMesh)
+        {
+            if (!_knockbackStoppedAgent)
+            {
+                _knockbackStoppedAgent = true;
+                _agent.isStopped = true;
+            }
+            _agent.Move(_knockbackVelocity * deltaTime);
+        }
+        else
+        {
+            transform.position += _knockbackVelocity * deltaTime;
+            ClampToGround();
+        }
+
+        if (_knockbackTime <= 0f)
+        {
+            _knockbackVelocity = Vector3.zero;
+            if (_agent != null && _agent.isOnNavMesh && _knockbackStoppedAgent)
+            {
+                _agent.isStopped = false;
+                _knockbackStoppedAgent = false;
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ClampToGround()
+    {
+        Vector3 origin = transform.position + Vector3.up * 50f;
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 200f, knockbackGroundMask, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.normal.y >= 0.3f)
+            {
+                transform.position = new Vector3(transform.position.x, hit.point.y + knockbackGroundOffset, transform.position.z);
+            }
+        }
+    }
+
+    public void ApplyKnockback(Vector3 impulse, float duration)
+    {
+        _knockbackVelocity += impulse;
+        _knockbackTime = Mathf.Max(_knockbackTime, duration);
     }
 
     private Transform AcquireMainTarget()
@@ -228,9 +344,9 @@ public class EnemyAI : MonoBehaviour
         switch (targetPriority)
         {
             case TargetPriority.PreferPlayers:
-                return GetNearestTarget(playerMask) ?? GetNearestTarget(towerMask);
+                return GetNearestTarget(playerMask) ?? GetNearestTarget(towerMask) ?? GetNearestTarget(wallMask);
             case TargetPriority.PreferTowers:
-                return GetNearestTarget(towerMask) ?? GetNearestTarget(playerMask);
+                return GetNearestTarget(towerMask) ?? GetNearestTarget(playerMask) ?? GetNearestTarget(wallMask);
             default:
                 return GetNearestTarget(TargetMask);
         }
@@ -312,8 +428,37 @@ public class EnemyAI : MonoBehaviour
         return best;
     }
 
+    private Transform FindWallTowardsTarget(Vector3 targetPosition)
+    {
+        // Chercher tous les murs dans un rayon de détection
+        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRadius * 100, fallbackTargetMask, QueryTriggerInteraction.Ignore);
+        Transform best = null;
+        float bestDist = float.MaxValue;
+        Debug.Log("Found " + hits.Length + " walls in detection radius.");
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Debug.Log("Checking wall: " + hits[i].name);
+            if (!TryGetDamageable(hits[i].transform, out _, out Transform root))
+            {
+                continue;
+            }
+
+            float distance = Vector3.Distance(transform.position, root.position);
+            
+            // Simplement prendre le mur le plus proche
+            if (distance < bestDist)
+            {
+                bestDist = distance;
+                best = root;
+            }
+        }
+
+        return best;
+    }
+
     private void TryAttack(Transform target)
     {
+        Debug.Log("Trying to attack: " + target.name);
         if (Time.time < _nextAttackTime)
         {
             return;
