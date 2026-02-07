@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 625c14eee3ad46c99df7c7c891ef668a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineThirdPersonFollow
-  Damping: {x: 4, y: 2, z: 2}
+  Damping: {x: 1, y: 2, z: 2}
   ShoulderOffset: {x: 0, y: 0.4, z: 0}
   VerticalArmLength: 2.5
   CameraSide: 0.5
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1036314630
+  GlobalObjectIdHash: 1800811430
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -353,9 +353,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   ShowTopMostFoldoutHeaderGroup: 1
-  moveSpeed: 5
-  rotationSpeed: 2
-  attackCooldown: 0.8
+  moveSpeed: 8
+  rotationSpeed: 3
+  attackCooldown: 0.6
+  special1Cooldown: 5
+  special2Cooldown: 8
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 3468093372047371371}
@@ -944,8 +946,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3022954332366428039}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.050401647, y: 0.53399, z: -0.031911906, w: 0.8433836}
-  m_LocalPosition: {x: 0.19282168, y: 3.5074449, z: 2.522861}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.43693, y: 2.9, z: -3.1030703}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1379,7 +1381,7 @@ Animator:
   m_GameObject: {fileID: 4950278780580484459}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: cbacab73a7a7f4bb4a0248dbe4bc7a2e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 3d917b7e379324d22a09f623f65f40fc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
