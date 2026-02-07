@@ -7,7 +7,6 @@ public class HUDController : MonoBehaviour
     public static HUDController Instance;
 
     [Header("UI Elements")]
-    [Header("UI Elements")]
     public Slider healthBar;
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI goldText;
@@ -15,6 +14,12 @@ public class HUDController : MonoBehaviour
 
     [Header("Chaos System")]
     public Slider stabilityBar;
+    
+    [Header("Animation")]
+    public HUDAnimator animator;
+
+    private int _lastHealth = 100;
+    private int _lastGold = 0;
 
     void Awake()
     {
@@ -26,10 +31,19 @@ public class HUDController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        
+        if (animator == null) animator = GetComponent<HUDAnimator>();
     }
 
     public void UpdateHealth(int health)
     {
+        if (health < _lastHealth)
+        {
+            if (animator != null && healthBar != null)
+                animator.ShakeObject(healthBar.GetComponent<RectTransform>(), 0.3f, 5f);
+        }
+        _lastHealth = health;
+
         if (healthBar != null)
         {
             healthBar.maxValue = 100;
@@ -56,6 +70,13 @@ public class HUDController : MonoBehaviour
 
     public void UpdateGold(int gold)
     {
+        if (gold > _lastGold)
+        {
+            if (animator != null && goldText != null)
+                animator.PulseObject(goldText.rectTransform, 0.2f, 1.5f);
+        }
+        _lastGold = gold;
+
         if (goldText != null)
         {
             goldText.text = "Gold: " + gold.ToString();
