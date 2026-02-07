@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class EnemySplitter : MonoBehaviour
@@ -27,6 +28,8 @@ public class EnemySplitter : MonoBehaviour
 
     private void Update()
     {
+        if (NetworkManager.Singleton != null && !NetworkManager.Singleton.IsServer) return;
+        
         if (!_hasSplit && _health != null && !_health.IsAlive)
         {
             if (_health.PreventSplit)
@@ -54,6 +57,12 @@ public class EnemySplitter : MonoBehaviour
         Vector3 spawnPos = transform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
 
         GameObject copy = Instantiate(gameObject, spawnPos, transform.rotation);
+        
+        NetworkObject networkObject = copy.GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            networkObject.Spawn();
+        }
         
         copy.transform.localScale = transform.localScale;
 

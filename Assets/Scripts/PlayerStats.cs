@@ -1,16 +1,20 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class PlayerStats : NetworkBehaviour
 {
     // Variables synchronisées sur le réseau
     // NetworkVariableWritePermission.Server : seul le serveur peut modifier (sécurité)
-    public NetworkVariable<int> Health = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    public NetworkVariable<int> Gold = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> Health;
+    public NetworkVariable<int> Gold;
 
     public override void OnNetworkSpawn()
     {
+        Health = new NetworkVariable<int>(Variables.Object(this.gameObject).Get<int>("HEALTH"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        Gold = new NetworkVariable<int>(Variables.Object(this.gameObject).Get<int>("GOLD"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         // Si c'est MON joueur local, je m'abonne aux changements pour mettre à jour l'UI
         if (IsOwner)
         {
@@ -39,6 +43,27 @@ public class PlayerStats : NetworkBehaviour
         {
             Health.OnValueChanged -= (oldValue, newValue) => UpdateHUD();
             Gold.OnValueChanged -= (oldValue, newValue) => UpdateHUD();
+        }
+    }
+
+    // --- RACCOURCIS DE TEST (DEV ONLY) ---
+    void Update()
+    {
+        // Seulement pour le joueur local
+        if (!IsOwner) return;
+
+        // H = Perdre 10 HP (pour tester la healthbar)
+        if (Keyboard.current.hKey.wasPressedThisFrame)
+        {
+            TakeDamageServerRpc(10);
+            Debug.Log("[DEBUG] Raccourci H: -10 HP");
+        }
+
+        // G = Gagner 50 Gold (pour tester le glitch effect)
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            AddGoldServerRpc(50);
+            Debug.Log("[DEBUG] Raccourci G: +50 Gold");
         }
     }
 

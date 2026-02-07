@@ -59,8 +59,10 @@ public class DebugKillEnemy : MonoBehaviour
             {
                 float damage = damageAmount < 1f ? health.maxHealth * damageAmount : damageAmount;
                 
-                health.TakeDamage(damage);
+                string hitType = damage >= health.CurrentHealth ? "ONE-SHOT (pas de split)" : $"{damage:F0} dégâts (split si mort)";
+                Debug.Log($"[{hitType}] Hit: {nearest.name} ({health.CurrentHealth:F0} HP)");
                 
+                health.TakeDamage(damage);
             }
         }
     }
