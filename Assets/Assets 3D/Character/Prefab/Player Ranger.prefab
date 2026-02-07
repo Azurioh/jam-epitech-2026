@@ -2151,7 +2151,7 @@ GameObject:
   - component: {fileID: 461351344427869054}
   - component: {fileID: 3474882521604865538}
   - component: {fileID: 2181260968574544814}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Ranger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2318,13 +2318,15 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 2
   attackCooldown: 0.8
+  special1Cooldown: 5
+  special2Cooldown: 8
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 6793910014969753089}
   groundDistance: 0.2
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   isGrounded: 0
 --- !u!114 &3474882521604865538
 MonoBehaviour:
