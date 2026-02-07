@@ -89,6 +89,9 @@ public class NetworkUI : MonoBehaviour
     // --- INTERFACE GRAPHIQUE ---
     void OnGUI()
     {
+        // Vérifie que le NetworkManager est prêt
+        if (NetworkManager.Singleton == null) return;
+
         if (_buttonStyle == null || _buttonStyle.fontSize != fontSize)
         {
             _buttonStyle = new GUIStyle(GUI.skin.button) { fontSize = fontSize };

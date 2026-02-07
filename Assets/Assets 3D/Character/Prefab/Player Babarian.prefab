@@ -293,15 +293,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerSpawner
   ShowTopMostFoldoutHeaderGroup: 1
-  towerGhostPrefab: {fileID: 3754289006203168666, guid: b3b1175fe1e7a46eea50056de9a45998, type: 3}
   validMat: {fileID: 2100000, guid: efa84646163214572976b42a7da4b464, type: 2}
   invalidMat: {fileID: 2100000, guid: cdfa73066d69a455b8e00a580e1ba981, type: 2}
-  realTowerPrefab: {fileID: 170057878204055968, guid: 167a8bd051df445e6b12afc9c6989a21, type: 3}
+  towerPrefabs:
+  - {fileID: 3700715196704607379, guid: a1009afc8ec5a41ba8688b0e70873979, type: 3}
+  - {fileID: 3700715196704607379, guid: ad0a6756642de430bb8e8597b1e8d040, type: 3}
+  - {fileID: 3700715196704607379, guid: 18dbadfee7e044185b9ab6f58dbbb2fb, type: 3}
+  - {fileID: 3700715196704607379, guid: 4738c69a7518d46dba5f5548cca33e29, type: 3}
   towerRadius: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  towerLayer:
     serializedVersion: 2
     m_Bits: 128
   playerCamera: {fileID: 3486521507405702322}
