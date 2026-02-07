@@ -9,6 +9,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
 
+    [Header("Attack")]
+    [SerializeField] private float attackCooldown = 0.8f;
+
     [Header("Jump")]
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float gravity = -9.81f;
@@ -38,6 +41,11 @@ public class PlayerController : NetworkBehaviour
     private readonly int isGroundedHash = Animator.StringToHash("IsGrounded");
     private readonly int jumpHash = Animator.StringToHash("Jump");
     private readonly int fallHash = Animator.StringToHash("IsFalling");
+    private readonly int attackHash = Animator.StringToHash("Attack");
+
+    // Attack
+    private float lastAttackTime = -999f;
+    private bool isAttacking;
 
     // --- Animation sync sur le réseau ---
     private NetworkVariable<float> networkAnimSpeed = new NetworkVariable<float>(
@@ -58,11 +66,13 @@ public class PlayerController : NetworkBehaviour
     {
         inputActions.Player.Enable();
         inputActions.Player.Jump.performed += OnJumpPerformed;
+        inputActions.Player.Attack.performed += OnAttackPerformed;
     }
 
     void OnDisable()
     {
         inputActions.Player.Jump.performed -= OnJumpPerformed;
+        inputActions.Player.Attack.performed -= OnAttackPerformed;
         inputActions.Player.Disable();
     }
 
@@ -177,6 +187,10 @@ public class PlayerController : NetworkBehaviour
             HandleMovement();
             HandleGravity();
 
+            // Reset attaque après cooldown
+            if (isAttacking && Time.time - lastAttackTime >= attackCooldown)
+                isAttacking = false;
+
             // Synchroniser l'état d'animation sur le réseau
             networkAnimSpeed.Value = moveInput.magnitude;
             networkIsGrounded.Value = isGrounded;
@@ -255,6 +269,39 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner)
         {
             animator.SetTrigger(jumpHash);
+        }
+    }
+
+    void OnAttackPerformed(InputAction.CallbackContext context)
+    {
+        if (!IsOwner) return;
+        if (isAttacking) return;
+        if (Time.time - lastAttackTime < attackCooldown) return;
+
+        lastAttackTime = Time.time;
+        isAttacking = true;
+        animator.SetTrigger(attackHash);
+        AttackServerRpc();
+    }
+
+    // Appelé par un Animation Event à la fin de l'animation d'attaque
+    public void OnAttackEnd()
+    {
+        isAttacking = false;
+    }
+
+    [ServerRpc]
+    private void AttackServerRpc()
+    {
+        AttackClientRpc();
+    }
+
+    [ClientRpc]
+    private void AttackClientRpc()
+    {
+        if (!IsOwner)
+        {
+            animator.SetTrigger(attackHash);
         }
     }
 
