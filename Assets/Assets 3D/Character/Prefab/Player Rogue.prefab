@@ -2188,10 +2188,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4304863779998562683}
     - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
-      propertyPath: ultimateScript
-      value: 
-      objectReference: {fileID: -1923985001428399225}
-    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: groundMask.m_Bits
       value: 256
       objectReference: {fileID: 0}
@@ -2293,9 +2289,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5121872233955479244}
-    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4304863779998562683}
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
@@ -2311,24 +2304,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
   m_PrefabInstance: {fileID: 7102578942012686358}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5121872233955479244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8706726477242790849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d0d78ec6227c9d4c86b77c1f8b92678, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  ShowTopMostFoldoutHeaderGroup: 1
-  maxHealth: 100
-  destroyOnDeath: 1
-  deathDelay: 2
-  _currentHealth:
-    m_InternalValue: 0
 --- !u!114 &4304863779998562683
 MonoBehaviour:
   m_ObjectHideFlags: 0
