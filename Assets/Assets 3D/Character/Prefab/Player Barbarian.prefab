@@ -1824,8 +1824,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7580826582692875205}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.042381987, y: -0.2362737, z: 0.010315936, w: 0.97070706}
-  m_LocalPosition: {x: 2.4691813, y: 3.3388345, z: 3.6246881}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.9, z: -4.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2224,9 +2224,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Barbarian
       objectReference: {fileID: 0}
+    - target: {fileID: 1938948991223724642, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 8974930579916801784}
     - target: {fileID: 5039108561582260776, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3520633757
+      value: 446433074
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
