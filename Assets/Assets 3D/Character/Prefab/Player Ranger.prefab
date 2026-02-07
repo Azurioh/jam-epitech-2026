@@ -2187,7 +2187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3175517218
+  GlobalObjectIdHash: 1214478763
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2259,11 +2259,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerSpawner
   ShowTopMostFoldoutHeaderGroup: 1
-  towerGhostPrefab: {fileID: 3754289006203168666, guid: b3b1175fe1e7a46eea50056de9a45998, type: 3}
   validMat: {fileID: 2100000, guid: efa84646163214572976b42a7da4b464, type: 2}
   invalidMat: {fileID: 2100000, guid: cdfa73066d69a455b8e00a580e1ba981, type: 2}
-  realTowerPrefab: {fileID: 170057878204055968, guid: 167a8bd051df445e6b12afc9c6989a21, type: 3}
+  towerPrefabs: []
   towerRadius: 1
+  towerHeightCheck: 1.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -2323,7 +2323,7 @@ MonoBehaviour:
   groundDistance: 0.2
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   isGrounded: 0
 --- !u!114 &3474882521604865538
 MonoBehaviour:
