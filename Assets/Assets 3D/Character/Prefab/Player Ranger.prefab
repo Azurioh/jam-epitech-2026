@@ -629,6 +629,8 @@ GameObject:
   - component: {fileID: 6041859340442542850}
   - component: {fileID: 6714440881787898679}
   - component: {fileID: 6692531244769763608}
+  - component: {fileID: -7901927939514365206}
+  - component: {fileID: -978630236375907329}
   m_Layer: 6
   m_Name: Player Ranger
   m_TagString: Player
@@ -666,7 +668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 58607361
+  GlobalObjectIdHash: 656691533
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -848,8 +850,8 @@ MonoBehaviour:
   weaponHitbox: {fileID: 0}
   projectilePrefab: {fileID: 6000649946685960263, guid: 429fa0ecffb9b4eb5a4e6a31c6b50b59, type: 3}
   shootPoint: {fileID: 0}
-  abilityScript: {fileID: 0}
-  ultimateScript: {fileID: 0}
+  abilityScript: {fileID: -978630236375907329}
+  ultimateScript: {fileID: -7901927939514365206}
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 8412259950899873868}
@@ -857,6 +859,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  knockbackDamping: 10
   isGrounded: 0
 --- !u!114 &6041859340442542850
 MonoBehaviour:
@@ -916,6 +919,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LagEffectReceiver
   lagFps: 10
+--- !u!114 &-7901927939514365206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3038404796189636768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d23cbf1828113d3ab9a8fd96e9f2ae7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RangerArrowRain
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 12
+  attackLockDuration: 1
+  rainArrowPrefab: {fileID: 6000649946685960263, guid: 41ca2f42beeea438ea3f5d464ab9f7bf, type: 3}
+  arrowCount: 20
+  rainRadius: 5
+  rainDuration: 3
+  spawnHeight: 10
+  damage: 30
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &-978630236375907329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3038404796189636768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ec77588c633333b388f92627c5b930a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RangerFireArrow
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 8
+  attackLockDuration: 0.5
+  fireArrowDuration: 6
+  damageMultiplier: 1.5
+  fireArrowPrefab: {fileID: 6000649946685960263, guid: 0e1d00c98584646ea88102ebed76db50, type: 3}
 --- !u!1 &3179227917997259754
 GameObject:
   m_ObjectHideFlags: 0
