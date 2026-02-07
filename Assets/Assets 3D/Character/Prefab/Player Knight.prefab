@@ -2430,6 +2430,14 @@ PrefabInstance:
       propertyPath: weaponHitbox
       value: 
       objectReference: {fileID: 6748232099229340629}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: abilityScript
+      value: 
+      objectReference: {fileID: -1424983446406860500}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: ultimateScript
+      value: 
+      objectReference: {fileID: 5761949670627115994}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: _data._json
       value: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"MOVE_SPEED","value":{"$content":8.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
@@ -2529,6 +2537,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8617626040458519700}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5761949670627115994}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1424983446406860500}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8460821539544025024}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3851995686970161416}
   m_SourcePrefab: {fileID: 100100000, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
 --- !u!1 &7587419919881208123 stripped
 GameObject:
@@ -2553,6 +2573,80 @@ MonoBehaviour:
   deathDelay: 2
   _currentHealth:
     m_InternalValue: 0
+--- !u!114 &5761949670627115994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587419919881208123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc030583db7e49779df36146a97fb8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KnightHulk
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 8
+  attackLockDuration: 0.5
+  hulkDuration: 5
+--- !u!114 &-1424983446406860500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587419919881208123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d07453ce87ddf3585bc016b028d223, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KnightShield
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 5
+  attackLockDuration: 0.5
+  shieldDuration: 3
+--- !u!114 &-8460821539544025024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587419919881208123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d45d27019712640193c3a2be1f876b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HulkEffect
+  sizeMultiplier: 2
+  healthMultiplier: 2
+  damageMultiplier: 2
+  hulkColor: {r: 0.2, g: 0.8, b: 0.2, a: 1}
+  growDuration: 0.5
+  shrinkDuration: 0.4
+  useParticles: 1
+--- !u!114 &-3851995686970161416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587419919881208123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a672d3c77de73c3078256bdb5c0b0004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShieldEffect
+  shieldRadius: 2
+  shieldOffset: {x: 0, y: 0.5, z: 0}
+  shieldColor: {r: 0.3, g: 0.5, b: 1, a: 0.3}
+  particleColor: {r: 0.5, g: 0.7, b: 1, a: 1}
+  customShader: {fileID: 0}
+  pulseSpeed: 2
+  pulseAmount: 0.1
+  fadeInDuration: 0.3
+  fadeOutDuration: 0.3
+  rotateShield: 1
+  rotationSpeed: {x: 0, y: 30, z: 0}
 --- !u!4 &8805444173543943293 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
