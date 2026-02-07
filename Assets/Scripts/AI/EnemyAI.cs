@@ -10,12 +10,25 @@ public class EnemyAI : MonoBehaviour
         PreferPlayers
     }
 
+    public enum AttackType
+    {
+        Melee,
+        Ranged
+    }
+
     [Header("Behavior")]
     [SerializeField] private TargetPriority targetPriority = TargetPriority.PreferTowers;
+    [SerializeField] private AttackType attackType = AttackType.Melee;
     [SerializeField] private float detectionRadius = 12f;
     [SerializeField] private float attackRange = 1.8f;
     [SerializeField] private float attackCooldown = 1.0f;
-    [SerializeField] private float damage = 10f;
+
+    [Header("Melee")]
+    [SerializeField] private DamageOnContact weaponHitbox;
+
+    [Header("Ranged")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform shootPoint;
 
     [Header("Layers")]
     [SerializeField] private LayerMask playerMask;
@@ -33,10 +46,21 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform eye;
 
     private NavMeshAgent _agent;
+    public Animator _animator;
     private Transform _mainTarget;
     private Transform _currentTarget;
     private float _nextAttackTime;
+    private float _lastAttackTime = -999f;
     private float _nextRetargetTime;
+
+    private Health _health;
+
+    private bool _isDead;
+
+    private readonly int speedHash = Animator.StringToHash("Speed");
+    private readonly int attackHash = Animator.StringToHash("Attack");
+    private readonly int hitHash = Animator.StringToHash("Hit");
+    private readonly int deathHash = Animator.StringToHash("Death");
 
     private int TargetMask => playerMask | towerMask;
     private int ObstacleMask => playerMask | towerMask | wallMask;
@@ -51,6 +75,8 @@ public class EnemyAI : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponentInChildren<Animator>();
+        _health = GetComponent<Health>();
         if (_agent == null)
         {
             Debug.LogError("EnemyAI requires a NavMeshAgent.", this);
@@ -59,6 +85,36 @@ public class EnemyAI : MonoBehaviour
         if (fallbackTarget == null && fallbackTargetMask != 0)
         {
             fallbackTarget = FindFallbackTargetFromLayer();
+        }
+
+        if (_health != null)
+        {
+            _health._currentHealth.OnValueChanged += OnHealthChanged;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_health != null)
+        {
+            _health._currentHealth.OnValueChanged -= OnHealthChanged;
+        }
+    }
+
+    private void OnHealthChanged(float oldValue, float newValue)
+    {
+        if (_isDead || _animator == null) return;
+
+        if (newValue <= 0f)
+        {
+            _isDead = true;
+            _animator.SetTrigger(deathHash);
+            if (_agent != null) _agent.isStopped = true;
+            enabled = false;
+        }
+        else if (newValue < oldValue)
+        {
+            _animator.SetTrigger(hitHash);
         }
     }
 
@@ -93,21 +149,46 @@ public class EnemyAI : MonoBehaviour
             {
                 _agent.isStopped = true;
             }
-            return;
+        }
+        else
+        {
+            float distance = Vector3.Distance(transform.position, _currentTarget.position);
+            bool inAttackRange = distance <= attackRange;
+
+            if (attackType == AttackType.Melee)
+            {
+                _agent.isStopped = inAttackRange;
+                if (!inAttackRange)
+                {
+                    _agent.SetDestination(_currentTarget.position);
+                }
+            }
+            else
+            {
+                // Le ranged s'arrête à portée pour tirer
+                _agent.isStopped = inAttackRange;
+                if (!inAttackRange)
+                {
+                    _agent.SetDestination(_currentTarget.position);
+                }
+            }
+
+            if (inAttackRange)
+            {
+                TryAttack(_currentTarget);
+            }
         }
 
-        float distance = Vector3.Distance(transform.position, _currentTarget.position);
-        bool inAttackRange = distance <= attackRange;
-
-        _agent.isStopped = inAttackRange;
-        if (!inAttackRange)
+        // Désactiver la hitbox après le cooldown (melee uniquement)
+        if (attackType == AttackType.Melee && weaponHitbox != null && Time.time - _lastAttackTime >= attackCooldown)
         {
-            _agent.SetDestination(_currentTarget.position);
+            weaponHitbox.DisableHitbox();
         }
 
-        if (inAttackRange)
+        if (_animator != null && _agent != null)
         {
-            TryAttack(_currentTarget);
+            float speed = _agent.velocity.magnitude / _agent.speed;
+            _animator.SetFloat(speedHash, speed);
         }
     }
 
@@ -207,13 +288,37 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        if (!TryGetDamageable(target, out IDamageable damageable, out _))
+        // Regarder la cible avant d'attaquer
+        Vector3 lookDir = (target.position - transform.position);
+        lookDir.y = 0f;
+        if (lookDir.sqrMagnitude > 0.01f)
         {
-            return;
+            transform.rotation = Quaternion.LookRotation(lookDir);
         }
 
-        damageable.TakeDamage(damage);
         _nextAttackTime = Time.time + attackCooldown;
+        _lastAttackTime = Time.time;
+
+        if (attackType == AttackType.Melee)
+        {
+            if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        }
+        else if (attackType == AttackType.Ranged)
+        {
+            ShootProjectile(target);
+        }
+
+        if (_animator != null) _animator.SetTrigger(attackHash);
+    }
+
+    private void ShootProjectile(Transform target)
+    {
+        if (projectilePrefab == null) return;
+
+        Vector3 spawnPos = shootPoint != null ? shootPoint.position : transform.position + Vector3.up * 0.8f;
+        Vector3 direction = (target.position + Vector3.up * 0.5f - spawnPos).normalized;
+
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
     }
 
     private bool TryGetDamageable(Transform target, out IDamageable damageable, out Transform root)
