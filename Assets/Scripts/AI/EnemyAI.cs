@@ -33,10 +33,20 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform eye;
 
     private NavMeshAgent _agent;
+    public Animator _animator;
     private Transform _mainTarget;
     private Transform _currentTarget;
     private float _nextAttackTime;
     private float _nextRetargetTime;
+
+    private Health _health;
+
+    private bool _isDead;
+
+    private readonly int speedHash = Animator.StringToHash("Speed");
+    private readonly int attackHash = Animator.StringToHash("Attack");
+    private readonly int hitHash = Animator.StringToHash("Hit");
+    private readonly int deathHash = Animator.StringToHash("Death");
 
     private int TargetMask => playerMask | towerMask;
     private int ObstacleMask => playerMask | towerMask | wallMask;
@@ -51,6 +61,8 @@ public class EnemyAI : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponentInChildren<Animator>();
+        _health = GetComponent<Health>();
         if (_agent == null)
         {
             Debug.LogError("EnemyAI requires a NavMeshAgent.", this);
@@ -59,6 +71,36 @@ public class EnemyAI : MonoBehaviour
         if (fallbackTarget == null && fallbackTargetMask != 0)
         {
             fallbackTarget = FindFallbackTargetFromLayer();
+        }
+
+        if (_health != null)
+        {
+            _health._currentHealth.OnValueChanged += OnHealthChanged;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_health != null)
+        {
+            _health._currentHealth.OnValueChanged -= OnHealthChanged;
+        }
+    }
+
+    private void OnHealthChanged(float oldValue, float newValue)
+    {
+        if (_isDead || _animator == null) return;
+
+        if (newValue <= 0f)
+        {
+            _isDead = true;
+            _animator.SetTrigger(deathHash);
+            if (_agent != null) _agent.isStopped = true;
+            enabled = false;
+        }
+        else if (newValue < oldValue)
+        {
+            _animator.SetTrigger(hitHash);
         }
     }
 
@@ -108,6 +150,12 @@ public class EnemyAI : MonoBehaviour
         if (inAttackRange)
         {
             TryAttack(_currentTarget);
+        }
+
+        if (_animator != null)
+        {
+            float speed = _agent.velocity.magnitude / _agent.speed;
+            _animator.SetFloat(speedHash, speed);
         }
     }
 
@@ -214,6 +262,7 @@ public class EnemyAI : MonoBehaviour
 
         damageable.TakeDamage(damage);
         _nextAttackTime = Time.time + attackCooldown;
+        if (_animator != null) _animator.SetTrigger(attackHash);
     }
 
     private bool TryGetDamageable(Transform target, out IDamageable damageable, out Transform root)

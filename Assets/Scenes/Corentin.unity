@@ -760,8 +760,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1832960775}
   - component: {fileID: 1832960776}
-  - component: {fileID: 1832960774}
   - component: {fileID: 1832960777}
+  - component: {fileID: 1832960774}
   m_Layer: 0
   m_Name: wave
   m_TagString: Untagged
@@ -783,6 +783,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
   ShowTopMostFoldoutHeaderGroup: 1
   waves:
+  - enemyCount: 1
+    enemyType: 1
+    spawnInterval: 0.05
+    splitChance: 100
+    splitCount: 2
+    copiesCanSplit: 1
   - enemyCount: 1
     enemyType: 1
     spawnInterval: 0.05
