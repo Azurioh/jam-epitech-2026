@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class EnemySplitter : NetworkBehaviour
+public class EnemySplitter : MonoBehaviour
 {
     [Header("Split Settings")]
     [Tooltip("Nombre de copies créées à la mort")]
@@ -28,7 +28,7 @@ public class EnemySplitter : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsServer) return;
+        if (NetworkManager.Singleton != null && !NetworkManager.Singleton.IsServer) return;
         
         if (!_hasSplit && _health != null && !_health.IsAlive)
         {
