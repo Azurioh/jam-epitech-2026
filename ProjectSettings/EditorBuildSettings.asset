@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Nathan.unity
     guid: e9d8d81e094aa4c439d553869b064085
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Aymeric Multi.unity
     guid: b45572737515e4ad9b2fdc0fcb0ec317
   - enabled: 0
