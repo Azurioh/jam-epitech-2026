@@ -5,13 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Ewan.unity
     guid: 5ddbce8bf911d4551b70ac893369d453
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Alan.unity
     guid: 52a73c49939624c1ab6903014ff7aa41
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Corentin.unity
     guid: 27cf37d3878783449951eecceb339eb0
   - enabled: 0
@@ -38,7 +38,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/NathanNetwork.unity
     guid: a0fabbd0ed93c304f83813660c10b5f8
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/full map.unity
     guid: 2b8c6e47674a05147a2088a879804338
   m_configObjects:
