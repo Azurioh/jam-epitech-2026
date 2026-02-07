@@ -19,7 +19,7 @@ public class NetworkUI : MonoBehaviour
     private Texture2D _buttonHover;
     private Texture2D _inputBackground;
     private Texture2D _accentTexture;
-    
+
     private GUIStyle _panelStyle;
     private GUIStyle _titleStyle;
     private GUIStyle _labelStyle;
@@ -28,14 +28,14 @@ public class NetworkUI : MonoBehaviour
     private GUIStyle _codeDisplayStyle;
     private GUIStyle _statusStyle;
     private GUIStyle _smallButtonStyle;
-    
+
     private bool _stylesInitialized = false;
     private int _lastScreenHeight = 0;
 
     async void Start()
     {
         statusMessage = "Connexion aux services...";
-        
+
         try
         {
             await UnityServices.InitializeAsync();
@@ -44,7 +44,7 @@ public class NetworkUI : MonoBehaviour
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
-            
+
             statusMessage = "Prêt à jouer !";
         }
         catch (System.Exception e)
@@ -67,12 +67,12 @@ public class NetworkUI : MonoBehaviour
     private void CreateTextures()
     {
         _panelBackground = MakeTexture(2, 2, new Color(0.1f, 0.1f, 0.15f, 0.95f));
-        
+
         _buttonNormal = MakeTexture(2, 2, new Color(0.35f, 0.25f, 0.7f, 1f));
         _buttonHover = MakeTexture(2, 2, new Color(0.45f, 0.35f, 0.85f, 1f));
-        
+
         _inputBackground = MakeTexture(2, 2, new Color(0.15f, 0.15f, 0.2f, 1f));
-        
+
         _accentTexture = MakeTexture(2, 2, new Color(0.1f, 0.8f, 0.6f, 0.2f));
     }
 
@@ -81,13 +81,13 @@ public class NetworkUI : MonoBehaviour
         Color[] pixels = new Color[width * height];
         for (int i = 0; i < pixels.Length; i++)
             pixels[i] = color;
-        
+
         Texture2D texture = new Texture2D(width, height);
         texture.SetPixels(pixels);
         texture.Apply();
         return texture;
     }
-    
+
     private Texture2D MakeGradientTexture(int width, int height, Color top, Color bottom)
     {
         Texture2D texture = new Texture2D(width, height);
@@ -193,7 +193,7 @@ public class NetworkUI : MonoBehaviour
         if (isConnecting) return;
         isConnecting = true;
         statusMessage = "Création de la partie...";
-        
+
         try
         {
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(7);
@@ -217,7 +217,7 @@ public class NetworkUI : MonoBehaviour
             statusMessage = "Erreur: " + e.Message;
             Debug.LogError(e);
         }
-        
+
         isConnecting = false;
     }
 
@@ -226,7 +226,7 @@ public class NetworkUI : MonoBehaviour
         if (isConnecting || string.IsNullOrEmpty(code)) return;
         isConnecting = true;
         statusMessage = "Connexion en cours...";
-        
+
         try
         {
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(code);
@@ -248,7 +248,7 @@ public class NetworkUI : MonoBehaviour
             statusMessage = "Erreur: Code invalide";
             Debug.LogError(e);
         }
-        
+
         isConnecting = false;
     }
 
