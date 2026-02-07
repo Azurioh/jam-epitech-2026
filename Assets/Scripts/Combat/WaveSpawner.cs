@@ -22,6 +22,18 @@ public class WaveSpawner : MonoBehaviour
 
         [Tooltip("Délai en secondes entre chaque spawn d'ennemi")]
         public float spawnInterval = 0.5f;
+
+        [Header("Split Settings")]
+        [Tooltip("Pourcentage d'ennemis qui se dédoublent à la mort (0-100)")]
+        [Range(0f, 100f)]
+        public float splitChance = 0f;
+
+        [Tooltip("Nombre de copies créées quand un ennemi split")]
+        [Range(2, 4)]
+        public int splitCount = 2;
+
+        [Tooltip("Les copies peuvent-elles aussi split ?")]
+        public bool copiesCanSplit = false;
     }
 
     [Header("Wave Configuration")]
@@ -98,18 +110,18 @@ public class WaveSpawner : MonoBehaviour
 
         for (int i = 0; i < wave.enemyCount; i++)
         {
-            SpawnEnemy(wave.enemyType);
+            SpawnEnemy(wave);
             yield return new WaitForSeconds(wave.spawnInterval);
         }
     }
 
-    private void SpawnEnemy(EnemyType type)
+    private void SpawnEnemy(Wave wave)
     {
-        GameObject prefab = type == EnemyType.Melee ? meleePrefab : rangedPrefab;
+        GameObject prefab = wave.enemyType == EnemyType.Melee ? meleePrefab : rangedPrefab;
 
         if (prefab == null)
         {
-            Debug.LogError($"Pas de prefab assigné pour le type {type}");
+            Debug.LogError($"Pas de prefab assigné pour le type {wave.enemyType}");
             return;
         }
 
@@ -121,6 +133,31 @@ public class WaveSpawner : MonoBehaviour
         if (ai != null)
         {
             ai.Initialize(playerMask, towerMask, wallMask);
+        }
+
+        // Ajoute le splitter si besoin (selon la chance configurée)
+        if (wave.splitChance > 0f && UnityEngine.Random.Range(0f, 100f) < wave.splitChance)
+        {
+            EnemySplitter splitter = enemy.AddComponent<EnemySplitter>();
+            
+            // Configure le splitter via reflection
+            var splitterType = typeof(EnemySplitter);
+            
+            var splitCountField = splitterType.GetField("splitCount", 
+                System.Reflection.BindingFlags.NonPublic | 
+                System.Reflection.BindingFlags.Instance);
+            if (splitCountField != null)
+            {
+                splitCountField.SetValue(splitter, wave.splitCount);
+            }
+            
+            var copiesCanSplitField = splitterType.GetField("copiesCanSplit", 
+                System.Reflection.BindingFlags.NonPublic | 
+                System.Reflection.BindingFlags.Instance);
+            if (copiesCanSplitField != null)
+            {
+                copiesCanSplitField.SetValue(splitter, wave.copiesCanSplit);
+            }
         }
 
         // Track l'ennemi
