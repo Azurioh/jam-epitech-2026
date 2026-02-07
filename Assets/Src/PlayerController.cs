@@ -14,9 +14,14 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float attackCooldown;
     [SerializeField] private DamageOnContact weaponHitbox;
 
-    [Header("Special Attacks")]
-    [SerializeField] private float special1Cooldown;
-    [SerializeField] private float special2Cooldown;
+    [Header("Abilities System")]
+    [Tooltip("Drag & drop un script qui implémente IAbility (ex: KnightShield)")]
+    [SerializeField] private MonoBehaviour abilityScript;
+    [Tooltip("Drag & drop un script qui implémente IAbility (ex: KnightHulk)")]
+    [SerializeField] private MonoBehaviour ultimateScript;
+
+    private IAbility ability;
+    private IAbility ultimate;
 
     [Header("Jump")]
     [SerializeField] private float jumpForce;
@@ -60,10 +65,6 @@ public class PlayerController : NetworkBehaviour
     private bool isDead;
     private Health health;
 
-    // Special attacks
-    private float lastSpecial1Time = -999f;
-    private float lastSpecial2Time = -999f;
-
     // --- Animation sync sur le réseau ---
     private NetworkVariable<float> networkAnimSpeed = new NetworkVariable<float>(
         0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -77,6 +78,16 @@ public class PlayerController : NetworkBehaviour
         inputActions = new PlayerInputActions();
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+
+        if (abilityScript != null)
+        {
+            ability = abilityScript as IAbility;
+        }
+
+        if (ultimateScript != null)
+        {
+            ultimate = ultimateScript as IAbility;
+        }
     }
 
     void OnEnable()
@@ -115,8 +126,6 @@ public class PlayerController : NetworkBehaviour
         gravity = vars.Get<float>("GRAVITY");
         weaponHitbox = vars.Get<DamageOnContact>("WEAPON_HITBOX");
         groundCheck = vars.Get<Transform>("GROUND_CHECK");
-        special1Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_1");
-        special2Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_2");
 
         // Téléporter au spawn point
         if (IsServer)
@@ -394,19 +403,23 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // --- Special 1 ---
+    // --- Special 1 (Ability) ---
     void OnSpecial1Performed(InputAction.CallbackContext context)
     {
         if (!IsOwner) return;
         if (isAttacking) return;
-        if (Time.time - lastSpecial1Time < special1Cooldown) return;
+        if (ability == null) return;
+        if (!ability.IsReady) return;
 
-        lastSpecial1Time = Time.time;
+        ability.Activate();
+
         isAttacking = true;
         lastAttackTime = Time.time;
-        currentAttackDuration = special1Cooldown;
+        currentAttackDuration = ability.AttackLockDuration;
+
         if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(special1Hash);
+
         Special1ServerRpc();
     }
 
@@ -425,17 +438,23 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // --- Special 2 ---
+    // --- Special 2 (Ultimate) ---
     void OnSpecial2Performed(InputAction.CallbackContext context)
     {
         if (!IsOwner) return;
         if (isAttacking) return;
-        if (Time.time - lastSpecial2Time < special2Cooldown) return;
+        if (ultimate == null) return;
+        if (!ultimate.IsReady)
+        {
+            return;
+        }
 
-        lastSpecial2Time = Time.time;
+        ultimate.Activate();
+
         isAttacking = true;
         lastAttackTime = Time.time;
-        currentAttackDuration = special2Cooldown;
+        currentAttackDuration = ultimate.AttackLockDuration;
+
         if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(special2Hash);
         Special2ServerRpc();
