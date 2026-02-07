@@ -280,33 +280,6 @@ public class NetworkUI : MonoBehaviour
             }
             GUI.enabled = true;
         }
-        else
-        {
-            string mode = NetworkManager.Singleton.IsHost ? "HOST" : "CLIENT";
-            GUILayout.Label(mode, new GUIStyle(_titleStyle) { fontSize = 28 });
-            
-            if (NetworkManager.Singleton.IsHost)
-            {
-                GUILayout.Space(10);
-                GUILayout.Label("Partage ce code avec tes amis :", _labelStyle);
-                
-                GUILayout.Label(joinCode, _codeDisplayStyle, GUILayout.Height(80));
-                
-                string copyText = codeCopied ? "COPIÉ !" : "COPIER LE CODE";
-                if (GUILayout.Button(copyText, _smallButtonStyle, GUILayout.Height(45)))
-                {
-                    GUIUtility.systemCopyBuffer = joinCode;
-                    codeCopied = true;
-                    codeCopiedTimer = 2f;
-                }
-            }
-            else
-            {
-                GUILayout.Space(20);
-                GUILayout.Label("Connecté à la partie !", new GUIStyle(_labelStyle) { alignment = TextAnchor.MiddleCenter, fontSize = 24 });
-            }
-        }
-
 
         GUILayout.EndArea();
     }
