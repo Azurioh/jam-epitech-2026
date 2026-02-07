@@ -30,6 +30,11 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform shootPoint;
 
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDamping = 10f;
+    [SerializeField] private LayerMask knockbackGroundMask = ~0;
+    [SerializeField] private float knockbackGroundOffset = 0.05f;
+
     [Header("Layers")]
     [SerializeField] private LayerMask playerMask;
     [SerializeField] private LayerMask towerMask;
@@ -55,6 +60,10 @@ public class EnemyAI : MonoBehaviour
     private float _lastAttackTime = -999f;
     private float _nextRetargetTime;
     private float _baseAgentSpeed;
+
+    private Vector3 _knockbackVelocity;
+    private float _knockbackTime;
+    private bool _knockbackStoppedAgent;
 
     private Health _health;
     private LagEffectReceiver _lagReceiver;
@@ -125,7 +134,7 @@ public class EnemyAI : MonoBehaviour
         {
             _isDead = true;
             _animator.SetTrigger(deathHash);
-            if (_agent != null) _agent.isStopped = true;
+            if (_agent != null && _agent.isOnNavMesh) _agent.isStopped = true;
             enabled = false;
         }
         else if (newValue < oldValue)
@@ -148,6 +157,13 @@ public class EnemyAI : MonoBehaviour
     {
         bool isLagged = _lagReceiver != null && _lagReceiver.IsLagged;
         float lagMultiplier = isLagged ? _lagReceiver.GetSpeedMultiplier() : 1f;
+        float deltaTime = Time.deltaTime;
+
+        if (HandleKnockback(deltaTime))
+        {
+            UpdateAnimatorSpeed();
+            return;
+        }
 
         if (_animator != null)
         {
@@ -165,7 +181,7 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        if (_agent != null)
+        if (_agent != null && _agent.isOnNavMesh)
         {
             _agent.speed = _baseAgentSpeed * lagMultiplier;
         }
@@ -185,9 +201,9 @@ public class EnemyAI : MonoBehaviour
             _currentTarget = null;
         }
 
-        if (_currentTarget == null || _agent == null)
+        if (_currentTarget == null || _agent == null || !_agent.isOnNavMesh)
         {
-            if (_agent != null && fallbackTarget != null)
+            if (_agent != null && _agent.isOnNavMesh && fallbackTarget != null)
             {
                 Debug.Log("No target found, fallback to: " + fallbackTarget.name);
                 Transform wallToAttack = FindWallTowardsTarget(fallbackTarget.position);
@@ -213,7 +229,7 @@ public class EnemyAI : MonoBehaviour
                     _agent.SetDestination(fallbackTarget.position);
                 }
             }
-            else if (_agent != null)
+            else if (_agent != null && _agent.isOnNavMesh)
             {
                 _agent.isStopped = true;
             }
@@ -253,11 +269,74 @@ public class EnemyAI : MonoBehaviour
             weaponHitbox.DisableHitbox();
         }
 
-        if (_animator != null && _agent != null)
+        if (_animator != null && _agent != null && _agent.isOnNavMesh)
         {
             float speed = _agent.velocity.magnitude / _agent.speed;
             _animator.SetFloat(speedHash, speed);
         }
+    }
+
+    private void UpdateAnimatorSpeed()
+    {
+        if (_animator == null || _agent == null || !_agent.isOnNavMesh) return;
+
+        float speed = _agent.velocity.magnitude / _agent.speed;
+        _animator.SetFloat(speedHash, speed);
+    }
+
+    private bool HandleKnockback(float deltaTime)
+    {
+        if (_knockbackTime <= 0f) return false;
+
+        _knockbackTime -= deltaTime;
+        float damp = Mathf.Clamp01(knockbackDamping * deltaTime);
+        _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, damp);
+
+        if (_agent != null && _agent.isOnNavMesh)
+        {
+            if (!_knockbackStoppedAgent)
+            {
+                _knockbackStoppedAgent = true;
+                _agent.isStopped = true;
+            }
+            _agent.Move(_knockbackVelocity * deltaTime);
+        }
+        else
+        {
+            transform.position += _knockbackVelocity * deltaTime;
+            ClampToGround();
+        }
+
+        if (_knockbackTime <= 0f)
+        {
+            _knockbackVelocity = Vector3.zero;
+            if (_agent != null && _agent.isOnNavMesh && _knockbackStoppedAgent)
+            {
+                _agent.isStopped = false;
+                _knockbackStoppedAgent = false;
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ClampToGround()
+    {
+        Vector3 origin = transform.position + Vector3.up * 50f;
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 200f, knockbackGroundMask, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.normal.y >= 0.3f)
+            {
+                transform.position = new Vector3(transform.position.x, hit.point.y + knockbackGroundOffset, transform.position.z);
+            }
+        }
+    }
+
+    public void ApplyKnockback(Vector3 impulse, float duration)
+    {
+        _knockbackVelocity += impulse;
+        _knockbackTime = Mathf.Max(_knockbackTime, duration);
     }
 
     private Transform AcquireMainTarget()

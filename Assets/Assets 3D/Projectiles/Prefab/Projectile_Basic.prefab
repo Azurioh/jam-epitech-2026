@@ -249,5 +249,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HomingProjectile
   ShowTopMostFoldoutHeaderGroup: 1
-  speed: 10
+  speed: 30
   damage: 10
+  spawnAoeZone: 0
+  aoeDuration: 10
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  groundOffset: 0.05

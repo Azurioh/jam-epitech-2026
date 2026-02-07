@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1036314630
+  GlobalObjectIdHash: 2469123597
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -356,6 +356,9 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 2
   attackCooldown: 0.8
+  weaponHitbox: {fileID: 0}
+  abilityScript: {fileID: 0}
+  ultimateScript: {fileID: 0}
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 3468093372047371371}
@@ -363,6 +366,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  knockbackDamping: 10
   isGrounded: 0
 --- !u!114 &6909685327106446717
 MonoBehaviour:

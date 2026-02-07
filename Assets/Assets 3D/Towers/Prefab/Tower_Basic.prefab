@@ -73,9 +73,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense
   ShowTopMostFoldoutHeaderGroup: 1
-  range: 10
+  range: 50
   fireRate: 1
   timeToLive: 30
+  isHealing: 0
+  price: 50
   projectilePrefab: {fileID: 2597385330741271111, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
   firePoint: {fileID: 0}
 --- !u!114 &-1277456350065728068
@@ -90,8 +92,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d0d78ec6227c9d4c86b77c1f8b92678, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 100
   destroyOnDeath: 0
+  deathDelay: 2
+  _currentHealth:
+    m_InternalValue: 0
 --- !u!65 &1515096066097423944
 BoxCollider:
   m_ObjectHideFlags: 0
