@@ -1,25 +1,26 @@
 using Unity.Cinemachine;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float rotationSpeed;
 
     [Header("Attack")]
-    [SerializeField] private float attackCooldown = 0.8f;
+    [SerializeField] private float attackCooldown;
     [SerializeField] private DamageOnContact weaponHitbox;
 
     [Header("Special Attacks")]
-    [SerializeField] private float special1Cooldown = 5f;
-    [SerializeField] private float special2Cooldown = 8f;
+    [SerializeField] private float special1Cooldown;
+    [SerializeField] private float special2Cooldown;
 
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float gravity;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundDistance = 0.2f;
     [SerializeField] private LayerMask groundMask;
@@ -95,6 +96,16 @@ public class PlayerController : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        var vars = Variables.Object(this.gameObject);
+        moveSpeed = vars.Get<float>("MOVE_SPEED");
+        rotationSpeed = vars.Get<float>("ROTATION_SPEED");
+        attackCooldown = vars.Get<float>("ATTACK_COOLDOWN");
+        jumpForce = vars.Get<float>("JUMP_FORCE");
+        gravity = vars.Get<float>("GRAVITY");
+        groundCheck = vars.Get<Transform>("GROUND_CHECK");
+        special1Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_1");
+        special2Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_2");
 
         // Téléporter au spawn point
         if (IsServer)

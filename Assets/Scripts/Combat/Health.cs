@@ -40,19 +40,16 @@ public class Health : NetworkBehaviour, IDamageable
         {
             return;
         }
-
-        if (!preventSplit && amount >= _currentHealth.Value)
+        if (!preventSplit && amount >= maxHealth)
         {
             preventSplit = true;
         }
-
         if (preventSplit)
         {
             _preventSplit.Value = true;
         }
 
         _currentHealth.Value = Mathf.Max(0f, _currentHealth.Value - amount);
-        Debug.Log("Current health: " + _currentHealth.Value);
         
         if (!IsAlive)
         {

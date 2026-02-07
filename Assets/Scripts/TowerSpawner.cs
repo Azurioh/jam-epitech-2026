@@ -44,6 +44,7 @@ public class TowerSpawner : NetworkBehaviour
 
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
+            Debug.Log("Build mode toggled");
             ToggleBuildMode();
         }
 
@@ -173,8 +174,11 @@ public class TowerSpawner : NetworkBehaviour
         Ray ray = playerCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
+        Debug.Log("Ray: " + ray);
+
         if (Physics.Raycast(ray, out hit, 100f, groundLayer))
         {
+            Debug.Log("Hit ground at: " + hit.point);
             // POSITION EXACTE (Plus de Grid !)
             Vector3 targetPos = hit.point;
 
@@ -192,6 +196,7 @@ public class TowerSpawner : NetworkBehaviour
         }
         else
         {
+            Debug.Log("Did not hit ground");
             // Si on pointe le ciel ou hors du sol, on cache le fantôme
             currentGhost.SetActive(false);
         }
