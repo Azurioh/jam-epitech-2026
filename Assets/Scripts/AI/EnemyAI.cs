@@ -38,7 +38,7 @@ public class EnemyAI : MonoBehaviour
     [Header("Fallback")]
     [Tooltip("Cible manuelle si aucune cible n'est trouvée (optionnel)")]
     [SerializeField] private Transform fallbackTarget;
-    
+
     [Tooltip("Layer pour chercher automatiquement une fallback target si fallbackTarget n'est pas assigné")]
     [SerializeField] private LayerMask fallbackTargetMask;
 
@@ -52,8 +52,10 @@ public class EnemyAI : MonoBehaviour
     private float _nextAttackTime;
     private float _lastAttackTime = -999f;
     private float _nextRetargetTime;
+    private float _baseAgentSpeed;
 
     private Health _health;
+    private LagEffectReceiver _lagReceiver;
 
     private bool _isDead;
 
@@ -77,9 +79,14 @@ public class EnemyAI : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponentInChildren<Animator>();
         _health = GetComponent<Health>();
+        _lagReceiver = GetComponent<LagEffectReceiver>();
         if (_agent == null)
         {
             Debug.LogError("EnemyAI requires a NavMeshAgent.", this);
+        }
+        else
+        {
+            _baseAgentSpeed = _agent.speed;
         }
 
         if (fallbackTarget == null && fallbackTargetMask != 0)
@@ -130,6 +137,30 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        bool isLagged = _lagReceiver != null && _lagReceiver.IsLagged;
+        float lagMultiplier = isLagged ? _lagReceiver.GetSpeedMultiplier() : 1f;
+
+        if (_animator != null)
+        {
+            if (isLagged)
+            {
+                _animator.speed = 0f;
+                if (_lagReceiver.TryGetAnimationDelta(out float animDelta))
+                {
+                    _animator.Update(animDelta);
+                }
+            }
+            else
+            {
+                _animator.speed = 1f;
+            }
+        }
+
+        if (_agent != null)
+        {
+            _agent.speed = _baseAgentSpeed * lagMultiplier;
+        }
+
         if (Time.time >= _nextRetargetTime)
         {
             _mainTarget = AcquireMainTarget();

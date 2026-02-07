@@ -8,13 +8,19 @@ public class PlayerStats : NetworkBehaviour
 {
     // Variables synchronisées sur le réseau
     // NetworkVariableWritePermission.Server : seul le serveur peut modifier (sécurité)
-    public NetworkVariable<int> Health;
-    public NetworkVariable<int> Gold;
+    // IMPORTANT : Les NetworkVariable doivent être instanciées à la déclaration, pas dans OnNetworkSpawn
+    public NetworkVariable<int> Health = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> Gold = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     public override void OnNetworkSpawn()
     {
-        Health = new NetworkVariable<int>(Variables.Object(this.gameObject).Get<int>("HEALTH"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        Gold = new NetworkVariable<int>(Variables.Object(this.gameObject).Get<int>("GOLD"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        // Initialiser les valeurs depuis les Visual Scripting Variables (côté serveur uniquement)
+        if (IsServer)
+        {
+            Health.Value = Variables.Object(this.gameObject).Get<int>("HEALTH");
+            Gold.Value = Variables.Object(this.gameObject).Get<int>("GOLD");
+        }
+
         // Si c'est MON joueur local, je m'abonne aux changements pour mettre à jour l'UI
         if (IsOwner)
         {

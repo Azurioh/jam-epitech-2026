@@ -18,10 +18,21 @@ public class TowerDefense : NetworkBehaviour
 
     private float fireCooldown = 0f;
     private float lifeTimer = 0f;
+    private LagEffectReceiver lagReceiver;
+
+    void Awake()
+    {
+        lagReceiver = GetComponent<LagEffectReceiver>();
+    }
 
     void Update()
     {
         if (!IsServer) return;
+
+        if (lagReceiver != null && !lagReceiver.CanProcessUpdate())
+        {
+            return;
+        }
 
         // Gestion du Time To Live
         lifeTimer += Time.deltaTime;

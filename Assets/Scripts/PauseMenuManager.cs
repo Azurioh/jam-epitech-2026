@@ -25,21 +25,20 @@ public class PauseMenuManager : MonoBehaviour
         }
 
         if (isPaused && codeTextDisplay != null) {
-            Debug.Log("Code: " + NetworkUI.joinCode);
             codeTextDisplay.text = "Code: " + NetworkUI.joinCode;
         }
     }
 
     public void Resume()
     {
-        Debug.Log("resume");
+        Debug.Log("Resuming game...");
         pauseMenuUI.SetActive(false);
         isPaused = false;
-        
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    
+
     public void CopyCode()
     {
         GUIUtility.systemCopyBuffer = NetworkUI.joinCode;
@@ -54,7 +53,7 @@ public class PauseMenuManager : MonoBehaviour
     {
         pauseMenuUI.SetActive(true);
         isPaused = true;
-        
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }

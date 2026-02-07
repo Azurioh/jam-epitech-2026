@@ -74,6 +74,8 @@ public class TowerSpawner : NetworkBehaviour
             selectedTowerIndex = 3;
         else if (Keyboard.current.digit5Key.wasPressedThisFrame && towerPrefabs.Length >= 5)
             selectedTowerIndex = 4;
+        else if (Keyboard.current.digit6Key.wasPressedThisFrame && towerPrefabs.Length >= 6)
+            selectedTowerIndex = 5;
 
         // Si on a changé de sélection et qu'on est en mode build, recréer le ghost
         if (previousIndex != selectedTowerIndex && isBuildMode)

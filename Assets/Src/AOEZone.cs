@@ -5,8 +5,13 @@ public class AOEZone : MonoBehaviour
     [Header("AOE Settings")]
     public float radius = 5f;
     public float duration = 4f;
-    public float damagePerSecond = 20f;
-    public LayerMask enemyLayer;
+    public float lagFps = 10f;
+    public LayerMask affectedLayers = ~0;
+
+    [Header("Grounding")]
+    public bool snapToGround = true;
+    public LayerMask groundMask = ~0;
+    public float groundOffset = 0.02f;
 
     [Header("Visual")]
     public Color zoneColor = new Color(0.3f, 0.7f, 1f, 0.8f);
@@ -22,10 +27,18 @@ public class AOEZone : MonoBehaviour
     private float spawnTime;
     private float currentScale;
     private bool isShrinking;
+    private readonly System.Collections.Generic.HashSet<LagEffectReceiver> laggedTargets =
+        new System.Collections.Generic.HashSet<LagEffectReceiver>();
+    private readonly System.Collections.Generic.HashSet<LagEffectReceiver> currentTargets =
+        new System.Collections.Generic.HashSet<LagEffectReceiver>();
 
     void Start()
     {
         spawnTime = Time.time;
+        if (snapToGround)
+        {
+            SnapToGround();
+        }
         CreateVisual();
         CreateParticles();
     }
@@ -58,6 +71,11 @@ public class AOEZone : MonoBehaviour
         material.SetColor("_EdgeColor", edgeColor);
         material.SetFloat("_Radius", 1f / 1.3f);
         meshRenderer.material = material;
+    }
+
+    public void SetDuration(float newDuration)
+    {
+        duration = newDuration;
     }
 
     void CreateParticles()
@@ -142,7 +160,7 @@ public class AOEZone : MonoBehaviour
         else if (elapsed < duration - 0.5f)
         {
             currentScale = 1f;
-            DealDamage();
+            ApplyLag();
         }
         // Phase de rétrécissement (dernière 0.5s)
         else if (elapsed < duration)
@@ -152,10 +170,11 @@ public class AOEZone : MonoBehaviour
 
             float shrinkT = (elapsed - (duration - 0.5f)) / 0.5f;
             currentScale = 1f - EaseInBack(shrinkT);
-            DealDamage();
+            ApplyLag();
         }
         else
         {
+            ClearLaggedTargets();
             if (destroyOnEnd)
                 Destroy(gameObject);
             return;
@@ -178,13 +197,94 @@ public class AOEZone : MonoBehaviour
         }
     }
 
-    void DealDamage()
+    void ApplyLag()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, radius * currentScale, enemyLayer);
+        currentTargets.Clear();
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius * currentScale, affectedLayers);
         foreach (Collider hit in hits)
         {
-            // Applique les dégâts - adapte selon ton système de vie
-            // Exemple: hit.GetComponent<Health>()?.TakeDamage(damagePerSecond * Time.deltaTime);
+            Health health = hit.GetComponentInParent<Health>();
+            if (health == null) continue;
+
+            LagEffectReceiver receiver = health.GetComponent<LagEffectReceiver>();
+            if (receiver == null) continue;
+
+            currentTargets.Add(receiver);
+            if (!laggedTargets.Contains(receiver))
+            {
+                receiver.AddLag(lagFps);
+                laggedTargets.Add(receiver);
+            }
+        }
+
+        if (laggedTargets.Count == 0) return;
+
+        System.Collections.Generic.List<LagEffectReceiver> toRemove = null;
+        foreach (LagEffectReceiver receiver in laggedTargets)
+        {
+            if (currentTargets.Contains(receiver)) continue;
+
+            if (toRemove == null)
+            {
+                toRemove = new System.Collections.Generic.List<LagEffectReceiver>();
+            }
+
+            toRemove.Add(receiver);
+        }
+
+        if (toRemove == null) return;
+
+        foreach (LagEffectReceiver receiver in toRemove)
+        {
+            receiver.RemoveLag();
+            laggedTargets.Remove(receiver);
+        }
+    }
+
+    void ClearLaggedTargets()
+    {
+        if (laggedTargets.Count == 0) return;
+
+        foreach (LagEffectReceiver receiver in laggedTargets)
+        {
+            receiver.RemoveLag();
+        }
+
+        laggedTargets.Clear();
+    }
+
+    void OnDestroy()
+    {
+        ClearLaggedTargets();
+    }
+
+    void SnapToGround()
+    {
+        Vector3 origin = transform.position + Vector3.up * 2f;
+        RaycastHit[] hits = Physics.RaycastAll(origin, Vector3.down, 20f, groundMask, QueryTriggerInteraction.Ignore);
+        if (hits.Length == 0)
+        {
+            return;
+        }
+
+        float bestY = float.PositiveInfinity;
+        Vector3 bestPoint = transform.position;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+            if (hit.normal.y < 0.3f) continue;
+
+            if (hit.point.y < bestY)
+            {
+                bestY = hit.point.y;
+                bestPoint = hit.point;
+            }
+        }
+
+        if (bestY < float.PositiveInfinity)
+        {
+            transform.position = bestPoint + Vector3.up * groundOffset;
         }
     }
 
