@@ -10,12 +10,25 @@ public class EnemyAI : MonoBehaviour
         PreferPlayers
     }
 
+    public enum AttackType
+    {
+        Melee,
+        Ranged
+    }
+
     [Header("Behavior")]
     [SerializeField] private TargetPriority targetPriority = TargetPriority.PreferTowers;
+    [SerializeField] private AttackType attackType = AttackType.Melee;
     [SerializeField] private float detectionRadius = 12f;
     [SerializeField] private float attackRange = 1.8f;
     [SerializeField] private float attackCooldown = 1.0f;
+
+    [Header("Melee")]
     [SerializeField] private DamageOnContact weaponHitbox;
+
+    [Header("Ranged")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform shootPoint;
 
     [Header("Layers")]
     [SerializeField] private LayerMask playerMask;
@@ -142,10 +155,22 @@ public class EnemyAI : MonoBehaviour
             float distance = Vector3.Distance(transform.position, _currentTarget.position);
             bool inAttackRange = distance <= attackRange;
 
-            _agent.isStopped = inAttackRange;
-            if (!inAttackRange)
+            if (attackType == AttackType.Melee)
             {
-                _agent.SetDestination(_currentTarget.position);
+                _agent.isStopped = inAttackRange;
+                if (!inAttackRange)
+                {
+                    _agent.SetDestination(_currentTarget.position);
+                }
+            }
+            else
+            {
+                // Le ranged s'arrête à portée pour tirer
+                _agent.isStopped = inAttackRange;
+                if (!inAttackRange)
+                {
+                    _agent.SetDestination(_currentTarget.position);
+                }
             }
 
             if (inAttackRange)
@@ -154,8 +179,8 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        // Désactiver la hitbox après le cooldown
-        if (weaponHitbox != null && Time.time - _lastAttackTime >= attackCooldown)
+        // Désactiver la hitbox après le cooldown (melee uniquement)
+        if (attackType == AttackType.Melee && weaponHitbox != null && Time.time - _lastAttackTime >= attackCooldown)
         {
             weaponHitbox.DisableHitbox();
         }
@@ -263,10 +288,37 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
+        // Regarder la cible avant d'attaquer
+        Vector3 lookDir = (target.position - transform.position);
+        lookDir.y = 0f;
+        if (lookDir.sqrMagnitude > 0.01f)
+        {
+            transform.rotation = Quaternion.LookRotation(lookDir);
+        }
+
         _nextAttackTime = Time.time + attackCooldown;
         _lastAttackTime = Time.time;
-        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+
+        if (attackType == AttackType.Melee)
+        {
+            if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        }
+        else if (attackType == AttackType.Ranged)
+        {
+            ShootProjectile(target);
+        }
+
         if (_animator != null) _animator.SetTrigger(attackHash);
+    }
+
+    private void ShootProjectile(Transform target)
+    {
+        if (projectilePrefab == null) return;
+
+        Vector3 spawnPos = shootPoint != null ? shootPoint.position : transform.position + Vector3.up * 0.8f;
+        Vector3 direction = (target.position + Vector3.up * 0.5f - spawnPos).normalized;
+
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
     }
 
     private bool TryGetDamageable(Transform target, out IDamageable damageable, out Transform root)

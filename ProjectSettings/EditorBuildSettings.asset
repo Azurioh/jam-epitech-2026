@@ -34,7 +34,6 @@ EditorBuildSettings:
     guid: b2b632899086d415796aca26cff0a483
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-    path: Assets/Scenes/Ewan.unity
-    guid: 5ddbce8bf911d4551b70ac893369d453
-  m_configObjects: {}
+    guid: {fileID: 0}
+    path: {fileID: 0}
   m_UseUCBPForAssetBundles: 0
