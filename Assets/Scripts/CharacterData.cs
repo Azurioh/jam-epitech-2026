@@ -16,6 +16,7 @@ public class CharacterData : ScriptableObject
     [Header("❤️ Stats de Base")]
     [Range(50, 300)]
     public int health = 100;
+    public int maxHealth = 100;
     
     [Range(5, 50)]
     public int damage = 15;

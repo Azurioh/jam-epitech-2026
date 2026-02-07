@@ -10,6 +10,11 @@ public class BarbarianRage : NetworkBehaviour, IAbility
     [SerializeField] private float damageMultiplier = 1.5f;
     [SerializeField] private Color rageColor = new Color(0.6f, 0.1f, 0.1f, 1f);
 
+    [Header("Beer Bottle")]
+    [Tooltip("Drag & drop le prefab de bière qui tombera sur le Barbarian")]
+    [SerializeField] private GameObject beerPrefab;
+    [SerializeField] private float beerSpawnHeight = 5f;
+
     private float lastUseTime = -999f;
     private bool isRageActive = false;
     private Weapon weaponComponent;
@@ -149,11 +154,38 @@ public class BarbarianRage : NetworkBehaviour, IAbility
 
         lastUseTime = Time.time;
 
-        StartCoroutine(RageMode());
+        SpawnBeer();
 
         if (IsOwner)
         {
             ActivateRageServerRpc();
+        }
+    }
+
+    void SpawnBeer()
+    {
+        if (beerPrefab != null)
+        {
+            Vector3 spawnPos = transform.position + Vector3.up * beerSpawnHeight;
+            GameObject beer = Instantiate(beerPrefab, spawnPos, Quaternion.identity);
+
+            BeerBottle beerScript = beer.GetComponent<BeerBottle>();
+            if (beerScript != null)
+            {
+                beerScript.Initialize(this);
+            }
+        }
+        else
+        {
+            StartRageFromBeer();
+        }
+    }
+
+    public void StartRageFromBeer()
+    {
+        if (!isRageActive)
+        {
+            StartCoroutine(RageMode());
         }
     }
 
@@ -165,18 +197,6 @@ public class BarbarianRage : NetworkBehaviour, IAbility
         {
             rageParticles.Play();
         }
-
-        GameObject rageZone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        rageZone.transform.position = transform.position + Vector3.up * 0.1f;
-        rageZone.transform.localScale = new Vector3(2.5f, 0.1f, 2.5f);
-
-        var renderer = rageZone.GetComponent<Renderer>();
-        Material mat = new Material(Shader.Find("Standard"));
-        mat.color = new Color(0.6f, 0.1f, 0.1f, 0.4f);
-        renderer.material = mat;
-
-        Destroy(rageZone.GetComponent<Collider>());
-        Destroy(rageZone, rageDuration);
 
         if (weaponComponent != null)
         {
@@ -222,7 +242,7 @@ public class BarbarianRage : NetworkBehaviour, IAbility
     {
         if (!IsOwner)
         {
-            StartCoroutine(RageMode());
+            SpawnBeer();
         }
     }
 }

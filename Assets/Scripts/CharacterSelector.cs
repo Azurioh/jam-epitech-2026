@@ -17,7 +17,7 @@ public class CharacterSelector : MonoBehaviour
     public float unselectedScale = 0.8f;
 
     [Header("Scene Settings")]
-    public string gameSceneName = "NathanGame";
+    public string gameSceneName = "Test_full";
 
     private int _currentIndex = 0;
     private GameObject[] _characterPreviews;
