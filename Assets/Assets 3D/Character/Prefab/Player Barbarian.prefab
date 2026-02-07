@@ -2369,6 +2369,8 @@ MonoBehaviour:
   rageDuration: 4
   damageMultiplier: 1.5
   rageColor: {r: 0.6, g: 0.1, b: 0.1, a: 1}
+  beerPrefab: {fileID: 7319301618790666406, guid: 24e358fa5bfacefdb8013f6d389f5416, type: 3}
+  beerSpawnHeight: 7
 --- !u!114 &4130951359762741047
 MonoBehaviour:
   m_ObjectHideFlags: 0
