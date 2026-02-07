@@ -30,6 +30,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float groundDistance = 0.2f;
     [SerializeField] private LayerMask groundMask;
 
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDamping = 10f;
+
     // Components
     private CharacterController controller;
     private Animator animator;
@@ -42,6 +45,8 @@ public class PlayerController : NetworkBehaviour
     // Physics
     private Vector3 velocity;
     public bool isGrounded;
+    private Vector3 knockbackVelocity;
+    private float knockbackTime;
 
     // Smoothing
     private Vector3 currentMoveDir;
@@ -301,6 +306,7 @@ public class PlayerController : NetworkBehaviour
                 moveInput = Vector2.ClampMagnitude(moveInput, 1f);
 
                 HandleGroundCheck();
+                UpdateKnockback(deltaTime);
                 HandleMovement(deltaTime, lagMultiplier);
                 HandleGravity(deltaTime, lagMultiplier);
             }
@@ -516,7 +522,46 @@ public class PlayerController : NetworkBehaviour
     void HandleGravity(float deltaTime, float speedMultiplier)
     {
         velocity.y += gravity * speedMultiplier * deltaTime;
-        controller.Move(velocity * speedMultiplier * deltaTime);
+        Vector3 totalVelocity = velocity + knockbackVelocity;
+        controller.Move(totalVelocity * speedMultiplier * deltaTime);
+    }
+
+    void UpdateKnockback(float deltaTime)
+    {
+        if (knockbackTime <= 0f) return;
+
+        knockbackTime -= deltaTime;
+        float damp = Mathf.Clamp01(knockbackDamping * deltaTime);
+        knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, damp);
+
+        if (knockbackTime <= 0f)
+        {
+            knockbackVelocity = Vector3.zero;
+        }
+    }
+
+    public void ApplyKnockbackServer(Vector3 impulse, float duration)
+    {
+        if (!IsServer) return;
+
+        ClientRpcParams rpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new[] { OwnerClientId }
+            }
+        };
+
+        ApplyKnockbackClientRpc(impulse, duration, rpcParams);
+    }
+
+    [ClientRpc]
+    private void ApplyKnockbackClientRpc(Vector3 impulse, float duration, ClientRpcParams rpcParams = default)
+    {
+        if (!IsOwner) return;
+
+        knockbackVelocity += impulse;
+        knockbackTime = Mathf.Max(knockbackTime, duration);
     }
 
     void UpdateAnimations()
