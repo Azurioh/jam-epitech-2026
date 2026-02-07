@@ -10,13 +10,29 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed;
 
+    public enum AttackType
+    {
+        Melee,
+        Ranged
+    }
+
     [Header("Attack")]
+    [SerializeField] private AttackType attackType = AttackType.Melee;
     [SerializeField] private float attackCooldown;
     [SerializeField] private DamageOnContact weaponHitbox;
 
-    [Header("Special Attacks")]
-    [SerializeField] private float special1Cooldown;
-    [SerializeField] private float special2Cooldown;
+    [Header("Ranged")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform shootPoint;
+
+    [Header("Abilities System")]
+    [Tooltip("Drag & drop un script qui implémente IAbility (ex: KnightShield)")]
+    [SerializeField] private MonoBehaviour abilityScript;
+    [Tooltip("Drag & drop un script qui implémente IAbility (ex: KnightHulk)")]
+    [SerializeField] private MonoBehaviour ultimateScript;
+
+    private IAbility ability;
+    private IAbility ultimate;
 
     [Header("Jump")]
     [SerializeField] private float jumpForce;
@@ -59,10 +75,7 @@ public class PlayerController : NetworkBehaviour
     private bool isAttacking;
     private bool isDead;
     private Health health;
-
-    // Special attacks
-    private float lastSpecial1Time = -999f;
-    private float lastSpecial2Time = -999f;
+    private LagEffectReceiver lagReceiver;
 
     // --- Animation sync sur le réseau ---
     private NetworkVariable<float> networkAnimSpeed = new NetworkVariable<float>(
@@ -77,10 +90,22 @@ public class PlayerController : NetworkBehaviour
         inputActions = new PlayerInputActions();
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+        lagReceiver = GetComponent<LagEffectReceiver>();
+
+        if (abilityScript != null)
+        {
+            ability = abilityScript as IAbility;
+        }
+
+        if (ultimateScript != null)
+        {
+            ultimate = ultimateScript as IAbility;
+        }
     }
 
     void OnEnable()
     {
+        PauseMenuManager.canPaused = true;
         inputActions.Player.Enable();
         inputActions.Player.Jump.performed += OnJumpPerformed;
         inputActions.Player.Attack.performed += OnAttackPerformed;
@@ -115,23 +140,17 @@ public class PlayerController : NetworkBehaviour
         gravity = vars.Get<float>("GRAVITY");
         weaponHitbox = vars.Get<DamageOnContact>("WEAPON_HITBOX");
         groundCheck = vars.Get<Transform>("GROUND_CHECK");
-        special1Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_1");
-        special2Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_2");
 
-        // Téléporter au spawn point
-        if (IsServer)
+        GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        if (spawns.Length > 0)
         {
-            GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
-            if (spawns.Length > 0)
-            {
-                int index = (int)(OwnerClientId % (ulong)spawns.Length);
-                // Désactiver le CharacterController sinon transform.position est ignoré
-                var cc = GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
-                transform.position = spawns[index].transform.position;
-                transform.rotation = spawns[index].transform.rotation;
-                if (cc != null) cc.enabled = true;
-            }
+            int index = (int)(OwnerClientId % (ulong)spawns.Length);
+            // Désactiver le CharacterController sinon transform.position est ignoré
+            var cc = GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            transform.position = spawns[index].transform.position;
+            transform.rotation = spawns[index].transform.rotation;
+            if (cc != null) cc.enabled = true;
         }
 
         playerCamera = GetComponentInChildren<Camera>();
@@ -244,6 +263,7 @@ public class PlayerController : NetworkBehaviour
         if (newValue <= 0f)
         {
             isDead = true;
+            Debug.Log($"[Player {OwnerClientId}] DEATH - HP dropped from {oldValue} to {newValue}");
             animator.SetTrigger(deathHash);
             if (IsOwner)
             {
@@ -254,33 +274,67 @@ public class PlayerController : NetworkBehaviour
         }
         else if (newValue < oldValue)
         {
+            Debug.Log($"[Player {OwnerClientId}] HIT - Took {oldValue - newValue} damage ({oldValue} -> {newValue} HP)");
             animator.SetTrigger(hitHash);
         }
     }
 
     void Update()
     {
+        bool isLagged = lagReceiver != null && lagReceiver.IsLagged;
+        float lagMultiplier = isLagged ? lagReceiver.GetSpeedMultiplier() : 1f;
+        float lagStep = Time.deltaTime;
+        bool allowLagStep = !isLagged || lagReceiver.TryConsumeLagStep(out lagStep);
+        float deltaTime = isLagged ? lagStep : Time.deltaTime;
+
+        if (animator != null)
+        {
+            if (isLagged)
+            {
+                animator.speed = 0f;
+                if (lagReceiver.TryGetAnimationDelta(out float animDelta))
+                {
+                    animator.Update(animDelta);
+                }
+            }
+            else
+            {
+                animator.speed = 1f;
+            }
+        }
+
         if (IsOwner)
         {
+            if (allowLagStep)
+            {
+                // Lire l'input de mouvement au tick de lag
+                moveInput = inputActions.Player.Move.ReadValue<Vector2>();
+                moveInput = Vector2.ClampMagnitude(moveInput, 1f);
+
+                HandleGroundCheck();
+                HandleMovement(deltaTime, lagMultiplier);
+                HandleGravity(deltaTime, lagMultiplier);
+            }
+
+            if (PauseMenuManager.isPaused) return;
             // Lire l'input de mouvement chaque frame
             moveInput = inputActions.Player.Move.ReadValue<Vector2>();
             moveInput = Vector2.ClampMagnitude(moveInput, 1f);
-
-            HandleGroundCheck();
-            HandleMovement();
-            HandleGravity();
 
             // Reset attaque après cooldown
             if (isAttacking && Time.time - lastAttackTime >= currentAttackDuration)
             {
                 isAttacking = false;
-                if (weaponHitbox != null) weaponHitbox.DisableHitbox();
+                if (attackType == AttackType.Melee && weaponHitbox != null) weaponHitbox.DisableHitbox();
             }
 
             // Synchroniser l'état d'animation sur le réseau
-            networkAnimSpeed.Value = moveInput.magnitude;
-            networkIsGrounded.Value = isGrounded;
-            networkIsFalling.Value = velocity.y < -1f && !isGrounded;
+            if (allowLagStep)
+            {
+                networkAnimSpeed.Value = moveInput.magnitude;
+                networkIsGrounded.Value = isGrounded;
+                networkIsFalling.Value = velocity.y < -1f && !isGrounded;
+            }
         }
 
         // Mettre à jour les animations sur TOUS les clients
@@ -297,7 +351,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    void HandleMovement()
+    void HandleMovement(float deltaTime, float speedMultiplier)
     {
         if (moveInput.magnitude < 0.01f) return;
 
@@ -320,11 +374,11 @@ public class PlayerController : NetworkBehaviour
         if (desiredMoveDirection.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(desiredMoveDirection);
-            float rotationSmoothness = rotationSpeed * Time.deltaTime;
+            float rotationSmoothness = rotationSpeed * speedMultiplier * deltaTime;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothness);
         }
 
-        controller.Move(desiredMoveDirection * moveSpeed * Time.deltaTime);
+        controller.Move(desiredMoveDirection * (moveSpeed * speedMultiplier) * deltaTime);
     }
 
     void OnJumpPerformed(InputAction.CallbackContext context)
@@ -333,6 +387,7 @@ public class PlayerController : NetworkBehaviour
 
         if (isGrounded)
         {
+            Debug.Log($"[Player {OwnerClientId}] JUMP - Force: {jumpForce}");
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
             animator.SetTrigger(jumpHash);
             // Synchroniser le trigger de saut aux autres clients
@@ -363,12 +418,22 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner) return;
         if (isAttacking) return;
         if (Time.time - lastAttackTime < attackCooldown) return;
+        if (PauseMenuManager.isPaused) return;
 
         lastAttackTime = Time.time;
         currentAttackDuration = attackCooldown;
         isAttacking = true;
-        Debug.Log("Attack");
-        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        Debug.Log($"[Player {OwnerClientId}] ATTACK ({attackType}) - Cooldown: {attackCooldown}s");
+
+        if (attackType == AttackType.Melee)
+        {
+            if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        }
+        else if (attackType == AttackType.Ranged)
+        {
+            ShootProjectile();
+        }
+
         animator.SetTrigger(attackHash);
         AttackServerRpc();
     }
@@ -377,6 +442,30 @@ public class PlayerController : NetworkBehaviour
     public void OnAttackEnd()
     {
         isAttacking = false;
+    }
+
+    private void ShootProjectile()
+    {
+        if (projectilePrefab == null) return;
+
+        Vector3 spawnPos = shootPoint != null ? shootPoint.position : transform.position + Vector3.up * 0.8f;
+        Vector3 direction = transform.forward;
+
+        // Tirer depuis le player dans la direction où la caméra regarde
+        Transform cam = (playerCamera != null) ? playerCamera.transform : Camera.main.transform;
+        Vector3 aimDir = cam.forward;
+        aimDir.y = 0f;
+        aimDir.Normalize();
+        direction = aimDir;
+
+        ShootServerRpc(spawnPos, Quaternion.LookRotation(direction));
+    }
+
+    [ServerRpc]
+    private void ShootServerRpc(Vector3 spawnPos, Quaternion rotation)
+    {
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, rotation);
+        proj.GetComponent<NetworkObject>()?.Spawn();
     }
 
     [ServerRpc]
@@ -394,19 +483,24 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // --- Special 1 ---
+    // --- Special 1 (Ability) ---
     void OnSpecial1Performed(InputAction.CallbackContext context)
     {
         if (!IsOwner) return;
         if (isAttacking) return;
-        if (Time.time - lastSpecial1Time < special1Cooldown) return;
+        if (ability == null) return;
+        if (!ability.IsReady) return;
 
-        lastSpecial1Time = Time.time;
+        Debug.Log($"[Player {OwnerClientId}] SPECIAL1 (Ability) - LockDuration: {ability.AttackLockDuration}s");
+        ability.Activate();
+
         isAttacking = true;
         lastAttackTime = Time.time;
-        currentAttackDuration = special1Cooldown;
+        currentAttackDuration = ability.AttackLockDuration;
+
         if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(special1Hash);
+
         Special1ServerRpc();
     }
 
@@ -425,17 +519,24 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // --- Special 2 ---
+    // --- Special 2 (Ultimate) ---
     void OnSpecial2Performed(InputAction.CallbackContext context)
     {
         if (!IsOwner) return;
         if (isAttacking) return;
-        if (Time.time - lastSpecial2Time < special2Cooldown) return;
+        if (ultimate == null) return;
+        if (!ultimate.IsReady)
+        {
+            return;
+        }
 
-        lastSpecial2Time = Time.time;
+        Debug.Log($"[Player {OwnerClientId}] SPECIAL2 (Ultimate) - LockDuration: {ultimate.AttackLockDuration}s");
+        ultimate.Activate();
+
         isAttacking = true;
         lastAttackTime = Time.time;
-        currentAttackDuration = special2Cooldown;
+        currentAttackDuration = ultimate.AttackLockDuration;
+
         if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(special2Hash);
         Special2ServerRpc();
@@ -456,10 +557,10 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    void HandleGravity()
+    void HandleGravity(float deltaTime, float speedMultiplier)
     {
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        velocity.y += gravity * speedMultiplier * deltaTime;
+        controller.Move(velocity * speedMultiplier * deltaTime);
     }
 
     void UpdateAnimations()

@@ -2194,6 +2194,14 @@ PrefabInstance:
       propertyPath: groundCheck
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: abilityScript
+      value: 
+      objectReference: {fileID: 5087223148122466326}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: ultimateScript
+      value: 
+      objectReference: {fileID: 4130951359762741047}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: _data._json
       value: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"MOVE_SPEED","value":{"$content":8.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
@@ -2277,6 +2285,14 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 8974930579916801784}
+    - target: {fileID: 1938948991223724642, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: towerPrefabs.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938948991223724642, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: 'towerPrefabs.Array.data[5]'
+      value: 
+      objectReference: {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
     - target: {fileID: 5039108561582260776, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 446433074
@@ -2297,6 +2313,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6985161289305179619}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5087223148122466326}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4130951359762741047}
   m_SourcePrefab: {fileID: 100100000, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
 --- !u!1 &7909369869873242202 stripped
 GameObject:
@@ -2321,6 +2343,44 @@ MonoBehaviour:
   deathDelay: 2
   _currentHealth:
     m_InternalValue: 0
+--- !u!114 &5087223148122466326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7909369869873242202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca9e45b054bdad2619cc501aa197d2ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarbarianRage
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 6
+  attackLockDuration: 0.3
+  rageDuration: 4
+  damageMultiplier: 1.5
+  rageColor: {r: 0.6, g: 0.1, b: 0.1, a: 1}
+--- !u!114 &4130951359762741047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7909369869873242202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abcf8900f1f0c24bf8836cb340374ecf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarbarianValkyrie
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 10
+  attackLockDuration: 1.5
+  aoeRadius: 5
+  damage: 50
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!4 &9132014821403282716 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}

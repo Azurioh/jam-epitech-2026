@@ -286,7 +286,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
   Priority:
     Enabled: 0
@@ -329,9 +329,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 625c14eee3ad46c99df7c7c891ef668a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineThirdPersonFollow
-  Damping: {x: 4, y: 2, z: 2}
+  Damping: {x: 1, y: 1, z: 1}
   ShoulderOffset: {x: 0, y: 0.4, z: 0}
   VerticalArmLength: 2.5
   CameraSide: 0.5
@@ -340,8 +340,8 @@ MonoBehaviour:
     Enabled: 0
     CollisionFilter:
       serializedVersion: 2
-      m_Bits: 1
-    IgnoreTag:
+      m_Bits: 4294967295
+    IgnoreTag: Untagged
     CameraRadius: 0.2
     DampingIntoCollision: 0
     DampingFromCollision: 0.5
@@ -620,14 +620,14 @@ Animator:
   m_GameObject: {fileID: 3992194302680992419}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: cbacab73a7a7f4bb4a0248dbe4bc7a2e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 08e9a68541e644e93a8c41b1eadebd50, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -1728,7 +1728,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -1772,7 +1772,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineBrain
   ShowDebugText: 0
   ShowCameraFrustum: 1
@@ -2129,11 +2129,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 887f5c6c873b1463e848803e318033d7, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CinemachineInputController
   target: {fileID: 5802423898317044634}
   mouseSensitivity: 8
-  minVerticalAngle: 5
+  minVerticalAngle: -50
   maxVerticalAngle: 60
 --- !u!1 &9112176178334363053
 GameObject:
@@ -2175,6 +2175,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: groundCheck
+      value: 
+      objectReference: {fileID: 7268868747730010782}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: weaponHitbox
+      value: 
+      objectReference: {fileID: 6981798928261312146}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: _data._json
       value: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"MOVE_SPEED","value":{"$content":8.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
@@ -2185,16 +2193,23 @@ PrefabInstance:
         mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"},{"name":"HEALTH","value":{"$content":100,"$type":"System.Int32"},"typeHandle":{"Identification":"System.Int32,
         mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"},{"name":"GOLD","value":{"$content":0,"$type":"System.Int32"},"typeHandle":{"Identification":"System.Int32,
         mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"},{"name":"GROUND_CHECK","value":{"$content":0,"$type":"UnityEngine.Object"},"typeHandle":{"Identification":"UnityEngine.Transform,
-        UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","$version":"A"},"$version":"A"}],"$version":"A"},"$version":"A"}}'
+        UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","$version":"A"},"$version":"A"},{"name":"WEAPON_HITBOX","value":{"$content":1,"$type":"UnityEngine.Object"},"typeHandle":{"Identification":"UnityEngine.GameObject,
+        UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","$version":"A"},"$version":"A"},{"name":"SPECIAL_COOLDOWN_1","value":{"$content":15,"$type":"System.Int32"},"typeHandle":{"Identification":"System.Int32,
+        mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"},{"name":"SPECIAL_COOLDOWN_2","value":{"$content":30,"$type":"System.Int32"},"typeHandle":{"Identification":"System.Int32,
+        mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"}],"$version":"A"},"$version":"A"}}'
       objectReference: {fileID: 0}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: _data._objectReferences.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: '_data._objectReferences.Array.data[0]'
-      value:
+      value: 
       objectReference: {fileID: 7268868747730010782}
+    - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: '_data._objectReferences.Array.data[1]'
+      value: 
+      objectReference: {fileID: 7350749807579603447}
     - target: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2239,6 +2254,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Rogue
       objectReference: {fileID: 0}
+    - target: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5039108561582260776, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 16779033
@@ -2255,13 +2278,39 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2940883489316283833}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5121872233955479244}
   m_SourcePrefab: {fileID: 100100000, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
 --- !u!4 &7758672451817168519 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
   m_PrefabInstance: {fileID: 7102578942012686358}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8706726477242790849 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+  m_PrefabInstance: {fileID: 7102578942012686358}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5121872233955479244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8706726477242790849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d0d78ec6227c9d4c86b77c1f8b92678, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
+  destroyOnDeath: 1
+  deathDelay: 2
+  _currentHealth:
+    m_InternalValue: 0
 --- !u!1001 &7692840653700504742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2317,8 +2366,58 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1a48468d95f6a4cdd82357a65bcd201b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1282054581925940136}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1a48468d95f6a4cdd82357a65bcd201b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6981798928261312146}
   m_SourcePrefab: {fileID: 100100000, guid: 1a48468d95f6a4cdd82357a65bcd201b, type: 3}
+--- !u!1 &7350749807579603447 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1a48468d95f6a4cdd82357a65bcd201b, type: 3}
+  m_PrefabInstance: {fileID: 7692840653700504742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1282054581925940136
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350749807579603447}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.2592974, y: 1.5308127, z: 0.15174122}
+  m_Center: {x: -0.00948123, y: 0.54051185, z: 0.00000012227146}
+--- !u!114 &6981798928261312146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7350749807579603447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332fe8b183bd84a56b0b8c6aaf69c857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageOnContact
+  damage: 25
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  destroyOnHit: 0
+  hitCooldown: 0.5
 --- !u!4 &7874768994329033549 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1a48468d95f6a4cdd82357a65bcd201b, type: 3}

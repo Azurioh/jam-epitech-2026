@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 5954284917962631539}
   - component: {fileID: -2745410851796699391}
   - component: {fileID: 157521178179546558}
+  - component: {fileID: -7393603166515704957}
+  - component: {fileID: -6796174750061053545}
   m_Layer: 0
   m_Name: Player_Base
   m_TagString: Untagged
@@ -131,6 +133,7 @@ MonoBehaviour:
   - {fileID: 3700715196704607379, guid: 18dbadfee7e044185b9ab6f58dbbb2fb, type: 3}
   - {fileID: 3700715196704607379, guid: ad0a6756642de430bb8e8597b1e8d040, type: 3}
   - {fileID: 5120775498591660775, guid: e4dcf59af4bed4f64840526db5b3f8e7, type: 3}
+  - {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
   towerRadius: 10
   towerHeightCheck: 1.5
   groundLayer:
@@ -265,3 +268,34 @@ MonoBehaviour:
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"},{"name":"SPECIAL_COOLDOWN_2","value":{"$content":0,"$type":"System.Int32"},"typeHandle":{"Identification":"System.Int32,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089","$version":"A"},"$version":"A"}],"$version":"A"},"$version":"A"}}'
     _objectReferences: []
+--- !u!114 &-7393603166515704957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893179199114277847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d0d78ec6227c9d4c86b77c1f8b92678, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
+  destroyOnDeath: 1
+  deathDelay: 2
+  _currentHealth:
+    m_InternalValue: 0
+--- !u!114 &-6796174750061053545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893179199114277847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66652e50fa51d4cb4aedc3eea530c67c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LagEffectReceiver
+  lagFps: 10

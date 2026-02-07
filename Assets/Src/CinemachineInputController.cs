@@ -18,6 +18,7 @@ public class CinemachineMouseController : MonoBehaviour
 
     void LateUpdate()
     {
+        if (PauseMenuManager.isPaused) return;
         if (target == null) return;
         
         // Input souris avec New Input System
