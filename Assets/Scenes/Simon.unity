@@ -150,10 +150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f28bd6430cc9248ce845f66f0eddac73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkUI
-  uiScale: 2
-  fontSize: 24
-  buttonHeight: 60
-  labelHeight: 40
 --- !u!114 &843718246
 MonoBehaviour:
   m_ObjectHideFlags: 0
