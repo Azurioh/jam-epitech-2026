@@ -1,20 +1,26 @@
 using Unity.Cinemachine;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float rotationSpeed;
 
     [Header("Attack")]
-    [SerializeField] private float attackCooldown = 0.8f;
+    [SerializeField] private float attackCooldown;
+    [SerializeField] private DamageOnContact weaponHitbox;
+
+    [Header("Special Attacks")]
+    [SerializeField] private float special1Cooldown;
+    [SerializeField] private float special2Cooldown;
 
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float gravity;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundDistance = 0.2f;
     [SerializeField] private LayerMask groundMask;
@@ -42,10 +48,17 @@ public class PlayerController : NetworkBehaviour
     private readonly int jumpHash = Animator.StringToHash("Jump");
     private readonly int fallHash = Animator.StringToHash("IsFalling");
     private readonly int attackHash = Animator.StringToHash("Attack");
+    private readonly int special1Hash = Animator.StringToHash("Special1");
+    private readonly int special2Hash = Animator.StringToHash("Special2");
 
     // Attack
     private float lastAttackTime = -999f;
+    private float currentAttackDuration;
     private bool isAttacking;
+
+    // Special attacks
+    private float lastSpecial1Time = -999f;
+    private float lastSpecial2Time = -999f;
 
     // --- Animation sync sur le réseau ---
     private NetworkVariable<float> networkAnimSpeed = new NetworkVariable<float>(
@@ -67,18 +80,48 @@ public class PlayerController : NetworkBehaviour
         inputActions.Player.Enable();
         inputActions.Player.Jump.performed += OnJumpPerformed;
         inputActions.Player.Attack.performed += OnAttackPerformed;
+        inputActions.Player.Special1.performed += OnSpecial1Performed;
+        inputActions.Player.Special2.performed += OnSpecial2Performed;
     }
 
     void OnDisable()
     {
         inputActions.Player.Jump.performed -= OnJumpPerformed;
         inputActions.Player.Attack.performed -= OnAttackPerformed;
+        inputActions.Player.Special1.performed -= OnSpecial1Performed;
+        inputActions.Player.Special2.performed -= OnSpecial2Performed;
         inputActions.Player.Disable();
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        var vars = Variables.Object(this.gameObject);
+        moveSpeed = vars.Get<float>("MOVE_SPEED");
+        rotationSpeed = vars.Get<float>("ROTATION_SPEED");
+        attackCooldown = vars.Get<float>("ATTACK_COOLDOWN");
+        jumpForce = vars.Get<float>("JUMP_FORCE");
+        gravity = vars.Get<float>("GRAVITY");
+        groundCheck = vars.Get<Transform>("GROUND_CHECK");
+        special1Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_1");
+        special2Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_2");
+
+        // Téléporter au spawn point
+        if (IsServer)
+        {
+            GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
+            if (spawns.Length > 0)
+            {
+                int index = (int)(OwnerClientId % (ulong)spawns.Length);
+                // Désactiver le CharacterController sinon transform.position est ignoré
+                var cc = GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = false;
+                transform.position = spawns[index].transform.position;
+                transform.rotation = spawns[index].transform.rotation;
+                if (cc != null) cc.enabled = true;
+            }
+        }
 
         playerCamera = GetComponentInChildren<Camera>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
@@ -188,8 +231,11 @@ public class PlayerController : NetworkBehaviour
             HandleGravity();
 
             // Reset attaque après cooldown
-            if (isAttacking && Time.time - lastAttackTime >= attackCooldown)
+            if (isAttacking && Time.time - lastAttackTime >= currentAttackDuration)
+            {
                 isAttacking = false;
+                if (weaponHitbox != null) weaponHitbox.DisableHitbox();
+            }
 
             // Synchroniser l'état d'animation sur le réseau
             networkAnimSpeed.Value = moveInput.magnitude;
@@ -279,7 +325,9 @@ public class PlayerController : NetworkBehaviour
         if (Time.time - lastAttackTime < attackCooldown) return;
 
         lastAttackTime = Time.time;
+        currentAttackDuration = attackCooldown;
         isAttacking = true;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(attackHash);
         AttackServerRpc();
     }
@@ -302,6 +350,68 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner)
         {
             animator.SetTrigger(attackHash);
+        }
+    }
+
+    // --- Special 1 ---
+    void OnSpecial1Performed(InputAction.CallbackContext context)
+    {
+        if (!IsOwner) return;
+        if (isAttacking) return;
+        if (Time.time - lastSpecial1Time < special1Cooldown) return;
+
+        lastSpecial1Time = Time.time;
+        isAttacking = true;
+        lastAttackTime = Time.time;
+        currentAttackDuration = special1Cooldown;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        animator.SetTrigger(special1Hash);
+        Special1ServerRpc();
+    }
+
+    [ServerRpc]
+    private void Special1ServerRpc()
+    {
+        Special1ClientRpc();
+    }
+
+    [ClientRpc]
+    private void Special1ClientRpc()
+    {
+        if (!IsOwner)
+        {
+            animator.SetTrigger(special1Hash);
+        }
+    }
+
+    // --- Special 2 ---
+    void OnSpecial2Performed(InputAction.CallbackContext context)
+    {
+        if (!IsOwner) return;
+        if (isAttacking) return;
+        if (Time.time - lastSpecial2Time < special2Cooldown) return;
+
+        lastSpecial2Time = Time.time;
+        isAttacking = true;
+        lastAttackTime = Time.time;
+        currentAttackDuration = special2Cooldown;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        animator.SetTrigger(special2Hash);
+        Special2ServerRpc();
+    }
+
+    [ServerRpc]
+    private void Special2ServerRpc()
+    {
+        Special2ClientRpc();
+    }
+
+    [ClientRpc]
+    private void Special2ClientRpc()
+    {
+        if (!IsOwner)
+        {
+            animator.SetTrigger(special2Hash);
         }
     }
 
