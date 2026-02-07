@@ -31,7 +31,6 @@ public class PauseMenuManager : MonoBehaviour
 
     public void Resume()
     {
-        Debug.Log("Resuming game...");
         pauseMenuUI.SetActive(false);
         isPaused = false;
 
