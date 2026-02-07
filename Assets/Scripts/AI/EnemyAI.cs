@@ -15,7 +15,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float detectionRadius = 12f;
     [SerializeField] private float attackRange = 1.8f;
     [SerializeField] private float attackCooldown = 1.0f;
-    [SerializeField] private float damage = 10f;
+    [SerializeField] private DamageOnContact weaponHitbox;
 
     [Header("Layers")]
     [SerializeField] private LayerMask playerMask;
@@ -37,6 +37,7 @@ public class EnemyAI : MonoBehaviour
     private Transform _mainTarget;
     private Transform _currentTarget;
     private float _nextAttackTime;
+    private float _lastAttackTime = -999f;
     private float _nextRetargetTime;
 
     private Health _health;
@@ -135,24 +136,31 @@ public class EnemyAI : MonoBehaviour
             {
                 _agent.isStopped = true;
             }
-            return;
         }
-
-        float distance = Vector3.Distance(transform.position, _currentTarget.position);
-        bool inAttackRange = distance <= attackRange;
-
-        _agent.isStopped = inAttackRange;
-        if (!inAttackRange)
+        else
         {
-            _agent.SetDestination(_currentTarget.position);
+            float distance = Vector3.Distance(transform.position, _currentTarget.position);
+            bool inAttackRange = distance <= attackRange;
+
+            _agent.isStopped = inAttackRange;
+            if (!inAttackRange)
+            {
+                _agent.SetDestination(_currentTarget.position);
+            }
+
+            if (inAttackRange)
+            {
+                TryAttack(_currentTarget);
+            }
         }
 
-        if (inAttackRange)
+        // Désactiver la hitbox après le cooldown
+        if (weaponHitbox != null && Time.time - _lastAttackTime >= attackCooldown)
         {
-            TryAttack(_currentTarget);
+            weaponHitbox.DisableHitbox();
         }
 
-        if (_animator != null)
+        if (_animator != null && _agent != null)
         {
             float speed = _agent.velocity.magnitude / _agent.speed;
             _animator.SetFloat(speedHash, speed);
@@ -255,13 +263,9 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        if (!TryGetDamageable(target, out IDamageable damageable, out _))
-        {
-            return;
-        }
-
-        damageable.TakeDamage(damage);
         _nextAttackTime = Time.time + attackCooldown;
+        _lastAttackTime = Time.time;
+        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         if (_animator != null) _animator.SetTrigger(attackHash);
     }
 
