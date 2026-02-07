@@ -80,6 +80,22 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
+        // Téléporter au spawn point
+        if (IsServer)
+        {
+            GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
+            if (spawns.Length > 0)
+            {
+                int index = (int)(OwnerClientId % (ulong)spawns.Length);
+                // Désactiver le CharacterController sinon transform.position est ignoré
+                var cc = GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = false;
+                transform.position = spawns[index].transform.position;
+                transform.rotation = spawns[index].transform.rotation;
+                if (cc != null) cc.enabled = true;
+            }
+        }
+
         playerCamera = GetComponentInChildren<Camera>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
 
