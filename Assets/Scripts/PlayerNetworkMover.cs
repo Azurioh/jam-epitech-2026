@@ -37,5 +37,18 @@ public class PlayerNetworkMover : NetworkBehaviour
         }
 
         transform.position += moveDir.normalized * speed * Time.deltaTime;
+
+        // --- DEBUG POUR LE HUD ---
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            // test dégat
+            GetComponent<PlayerStats>().TakeDamageServerRpc(10);
+        }
+
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            // test gold
+            GetComponent<PlayerStats>().AddGoldServerRpc(50);
+        }
     }
 }
