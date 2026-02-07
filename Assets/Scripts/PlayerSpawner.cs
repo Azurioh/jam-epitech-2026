@@ -10,10 +10,10 @@ public class PlayerSpawner : NetworkBehaviour
     [Header("Character Prefabs")]
     [Tooltip("Doit être dans le MÊME ORDRE que dans CharacterSelector")]
     public GameObject[] characterPrefabs;
-    
+
     [Header("Spawn Settings")]
     public Transform spawnPoint;
-    
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -22,7 +22,7 @@ public class PlayerSpawner : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         }
     }
-    
+
     public override void OnNetworkDespawn()
     {
         if (IsServer && NetworkManager.Singleton != null)
@@ -30,32 +30,36 @@ public class PlayerSpawner : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         }
     }
-    
+
     private void OnClientConnected(ulong clientId)
     {
         // Demande au client son index de personnage puis spawn
         SpawnPlayerForClient(clientId);
     }
-    
+
     private void SpawnPlayerForClient(ulong clientId)
     {
         // Récupère l'index du personnage sélectionné
         int characterIndex = CharacterSelector.SelectedCharacterIndex;
-        
+
         // Vérifie que l'index est valide
         if (characterIndex < 0 || characterIndex >= characterPrefabs.Length)
         {
             Debug.LogError($"Invalid character index: {characterIndex}. Using default (0).");
             characterIndex = 0;
         }
-        
+
         // Position de spawn
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         spawnPos += new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f)); // Offset aléatoire
-        
+
         // Spawn le personnage
         GameObject player = Instantiate(characterPrefabs[characterIndex], spawnPos, Quaternion.identity);
-        
+
+        // Hardcode tag et layer Player (seulement sur le root, pas les enfants)
+        player.tag = "Player";
+        player.layer = LayerMask.NameToLayer("Player");
+
         // Spawn sur le réseau et donne le contrôle au client
         NetworkObject netObj = player.GetComponent<NetworkObject>();
         if (netObj != null)

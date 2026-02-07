@@ -57,9 +57,17 @@ PrefabInstance:
       value: 467782189
       objectReference: {fileID: 0}
     - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
+      propertyPath: speed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
       propertyPath: spawnAoeZone
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8623553431997381406, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c24f662daccfe4edbbd16839db72a8c0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

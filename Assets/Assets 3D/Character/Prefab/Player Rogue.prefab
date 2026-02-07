@@ -2183,6 +2183,14 @@ PrefabInstance:
       propertyPath: weaponHitbox
       value: 
       objectReference: {fileID: 6981798928261312146}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: abilityScript
+      value: 
+      objectReference: {fileID: 4304863779998562683}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: groundMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 157521178179546558, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: _data._json
       value: '{"declarations":{"Kind":"Object","collection":{"$content":[{"name":"MOVE_SPEED","value":{"$content":8.0,"$type":"System.Single"},"typeHandle":{"Identification":"System.Single,
@@ -2281,7 +2289,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5121872233955479244}
+      addedObject: {fileID: 4304863779998562683}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -7121515543671264092}
   m_SourcePrefab: {fileID: 100100000, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
 --- !u!4 &7758672451817168519 stripped
 Transform:
@@ -2293,7 +2304,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
   m_PrefabInstance: {fileID: 7102578942012686358}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5121872233955479244
+--- !u!114 &4304863779998562683
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2302,15 +2313,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 8706726477242790849}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d0d78ec6227c9d4c86b77c1f8b92678, type: 3}
+  m_Script: {fileID: 11500000, guid: 42407b242fbbeab5d91f3ed3ee033698, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
+  m_EditorClassIdentifier: Assembly-CSharp::RogueSmoke
   ShowTopMostFoldoutHeaderGroup: 1
-  maxHealth: 100
-  destroyOnDeath: 1
-  deathDelay: 2
-  _currentHealth:
-    m_InternalValue: 0
+  cooldown: 20
+  attackLockDuration: 0.5
+  smokePrefab: {fileID: 322724974516350758, guid: d22d7c5eee5904e75b1a68e84936a7c0, type: 3}
+  smokeDuration: 15
+--- !u!114 &-7121515543671264092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8706726477242790849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82e644565fb08425baad502280830400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LineSpawner
+  ShowTopMostFoldoutHeaderGroup: 1
+  prefabToSpawn: {fileID: 3875540190951930185, guid: f663c807247614210b56ffb10cfa5309, type: 3}
+  cooldown: 12
+  attackLockDuration: 0.5
+  spawnCount: 10
+  spacing: 1
+  delayBetweenSpawns: 0.1
+  startOffset: 1.5
 --- !u!1001 &7692840653700504742
 PrefabInstance:
   m_ObjectHideFlags: 0
