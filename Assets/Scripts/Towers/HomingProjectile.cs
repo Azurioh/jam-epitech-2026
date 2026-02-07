@@ -5,13 +5,15 @@ public class HomingProjectile : NetworkBehaviour
 {
     [SerializeField] private float speed = 10f;
     [SerializeField] private int damage = 10;
+    private bool _isHealing = false;
 
     private Transform target;
 
     // Fonction appelée par la tourelle juste après le Spawn pour donner la cible
-    public void SetTarget(Transform newTarget)
+    public void SetTarget(Transform newTarget, bool isHealing = false)
     {
         target = newTarget;
+        _isHealing = isHealing;
     }
 
     void Update()
@@ -44,9 +46,7 @@ public class HomingProjectile : NetworkBehaviour
         {
             // TODO: Ici tu appelleras plus tard le script de vie de l'ennemi
             // ex: other.GetComponent<EnemyHealth>().TakeDamage(damage);
-            other.GetComponent<Health>().TakeDamage(damage);
-
-            Debug.Log("Touché ! " + other.name + " prend " + damage + " dégâts.");
+            other.GetComponent<Health>().TakeDamage(_isHealing ? -damage : damage);
 
             // On détruit le projectile proprement sur le réseau
             GetComponent<NetworkObject>().Despawn();

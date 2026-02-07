@@ -7,6 +7,8 @@ public class TowerDefense : NetworkBehaviour
     [SerializeField] private float range = 10f;
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private float timeToLive = 30f; // Durée de vie de la tour en secondes
+    [SerializeField] private bool isHealing = false;
+    [SerializeField] private float healAmount = 10f;
 
     [Header("References")]
     [SerializeField] private GameObject projectilePrefab; // Glisse le Prefab Projectile ici
@@ -43,7 +45,6 @@ public class TowerDefense : NetworkBehaviour
     {
         // 1. On instancie le projectile côté serveur
         // Si tu n'as pas créé de firePoint, utilise transform.position + Vector3.up
-        Debug.Log("Firepoint: " + (firePoint != null ? firePoint.position.ToString() : "None") + ", Target: " + targetTransform.position);
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + Vector3.up;
 
         GameObject projectileGO = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
@@ -52,7 +53,7 @@ public class TowerDefense : NetworkBehaviour
         HomingProjectile projectileScript = projectileGO.GetComponent<HomingProjectile>();
         if (projectileScript != null)
         {
-            projectileScript.SetTarget(targetTransform);
+            projectileScript.SetTarget(targetTransform, isHealing);
         }
 
         // 3. CRUCIAL : On fait apparaître l'objet sur le réseau

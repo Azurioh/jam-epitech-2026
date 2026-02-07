@@ -40,6 +40,7 @@ public class Health : MonoBehaviour, IDamageable
         }
 
         _currentHealth = Mathf.Max(0f, _currentHealth - amount);
+        Debug.Log("Current health: " + _currentHealth);
         if (!IsAlive)
         {
             HandleDeath();
