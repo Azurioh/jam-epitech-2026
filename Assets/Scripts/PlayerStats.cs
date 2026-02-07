@@ -2,6 +2,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class PlayerStats : NetworkBehaviour
 {
@@ -52,14 +53,14 @@ public class PlayerStats : NetworkBehaviour
         if (!IsOwner) return;
 
         // H = Perdre 10 HP (pour tester la healthbar)
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Keyboard.current.hKey.wasPressedThisFrame)
         {
             TakeDamageServerRpc(10);
             Debug.Log("[DEBUG] Raccourci H: -10 HP");
         }
 
         // G = Gagner 50 Gold (pour tester le glitch effect)
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Keyboard.current.gKey.wasPressedThisFrame)
         {
             AddGoldServerRpc(50);
             Debug.Log("[DEBUG] Raccourci G: +50 Gold");
