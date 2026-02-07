@@ -1,4 +1,5 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,11 +7,13 @@ public class PlayerStats : NetworkBehaviour
 {
     // Variables synchronisées sur le réseau
     // NetworkVariableWritePermission.Server : seul le serveur peut modifier (sécurité)
-    public NetworkVariable<int> Health = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    public NetworkVariable<int> Gold = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> Health;
+    public NetworkVariable<int> Gold;
 
     public override void OnNetworkSpawn()
     {
+        Health = new NetworkVariable<int>(Variables.Object(this.gameObject).Get<int>("HEALTH"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        Gold = new NetworkVariable<int>(Variables.Object(this.gameObject).Get<int>("GOLD"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         // Si c'est MON joueur local, je m'abonne aux changements pour mettre à jour l'UI
         if (IsOwner)
         {
