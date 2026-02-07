@@ -6,16 +6,26 @@ public class TowerDefense : NetworkBehaviour
     [Header("Stats")]
     [SerializeField] private float range = 10f;
     [SerializeField] private float fireRate = 1f;
+    [SerializeField] private float timeToLive = 30f; // Durée de vie de la tour en secondes
 
     [Header("References")]
     [SerializeField] private GameObject projectilePrefab; // Glisse le Prefab Projectile ici
     [SerializeField] private Transform firePoint;         // Crée un objet vide "Muzzle" au bout du canon
 
     private float fireCooldown = 0f;
+    private float lifeTimer = 0f;
 
     void Update()
     {
         if (!IsServer) return;
+
+        // Gestion du Time To Live
+        lifeTimer += Time.deltaTime;
+        if (lifeTimer >= timeToLive)
+        {
+            DestroyTower();
+            return;
+        }
 
         fireCooldown -= Time.deltaTime;
         if (fireCooldown > 0) return;
@@ -33,6 +43,7 @@ public class TowerDefense : NetworkBehaviour
     {
         // 1. On instancie le projectile côté serveur
         // Si tu n'as pas créé de firePoint, utilise transform.position + Vector3.up
+        Debug.Log("Firepoint: " + (firePoint != null ? firePoint.position.ToString() : "None") + ", Target: " + targetTransform.position);
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position + Vector3.up;
 
         GameObject projectileGO = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
@@ -65,6 +76,16 @@ public class TowerDefense : NetworkBehaviour
             }
         }
         return closest;
+    }
+
+    private void DestroyTower()
+    {
+        // On despawn l'objet du réseau avant de le détruire
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn();
+        }
+        Destroy(gameObject);
     }
 
     // Petit bonus : Pour voir la portée dans l'éditeur
