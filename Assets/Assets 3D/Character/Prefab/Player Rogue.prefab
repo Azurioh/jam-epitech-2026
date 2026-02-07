@@ -573,7 +573,7 @@ GameObject:
   - component: {fileID: 4545750628723953309}
   - component: {fileID: 6335106691215903657}
   - component: {fileID: 1845331900189402974}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Rogue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -740,6 +740,8 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 2
   attackCooldown: 0.8
+  special1Cooldown: 5
+  special2Cooldown: 8
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 7719569706389577997}

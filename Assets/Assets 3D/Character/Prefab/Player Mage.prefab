@@ -1102,7 +1102,7 @@ GameObject:
   - component: {fileID: 7621961120902440520}
   - component: {fileID: 7094145218247938271}
   - component: {fileID: 721732512634647755}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Mage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1269,6 +1269,8 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 2
   attackCooldown: 0.8
+  special1Cooldown: 5
+  special2Cooldown: 8
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 4737841316055197644}
