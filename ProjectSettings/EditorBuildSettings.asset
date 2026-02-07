@@ -8,5 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Ewan.unity
     guid: 5ddbce8bf911d4551b70ac893369d453
+  - enabled: 1
+    path: Assets/Scenes/Alan.unity
+    guid: 52a73c49939624c1ab6903014ff7aa41
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

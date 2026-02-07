@@ -5,6 +5,11 @@ public class HomingProjectile : NetworkBehaviour
 {
     [SerializeField] private float speed = 10f;
     [SerializeField] private int damage = 10;
+    [Header("AOE")]
+    [SerializeField] private bool spawnAoeZone = false;
+    [SerializeField] private float aoeDuration = 10f;
+    [SerializeField] private LayerMask groundMask = ~0;
+    [SerializeField] private float groundOffset = 0.05f;
     private bool _isHealing = false;
 
     private Transform target;
@@ -48,8 +53,62 @@ public class HomingProjectile : NetworkBehaviour
             // ex: other.GetComponent<EnemyHealth>().TakeDamage(damage);
             other.GetComponent<Health>().TakeDamage(_isHealing ? -damage : damage);
 
+            Vector3 spawnPosition = GetGroundedPosition(transform.position);
+            SpawnAoeZone(spawnPosition);
+
             // On détruit le projectile proprement sur le réseau
             GetComponent<NetworkObject>().Despawn();
         }
+    }
+
+    private void SpawnAoeZone(Vector3 position)
+    {
+        if (!spawnAoeZone) return;
+
+        GameObject aoeGO = new GameObject("AOEZone");
+        aoeGO.transform.position = position;
+        AOEZone zone = aoeGO.AddComponent<AOEZone>();
+
+        if (zone != null)
+        {
+            zone.SetDuration(aoeDuration);
+        }
+
+        NetworkObject netObject = aoeGO.GetComponent<NetworkObject>();
+        if (netObject != null)
+        {
+            netObject.Spawn();
+        }
+    }
+
+    private Vector3 GetGroundedPosition(Vector3 position)
+    {
+        Vector3 origin = position + Vector3.up * 2f;
+        RaycastHit[] hits = Physics.RaycastAll(origin, Vector3.down, 20f, groundMask, QueryTriggerInteraction.Ignore);
+        if (hits.Length == 0)
+        {
+            return position;
+        }
+
+        float bestY = float.PositiveInfinity;
+        Vector3 bestPoint = position;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+            if (hit.normal.y < 0.3f) continue;
+
+            if (hit.point.y < bestY)
+            {
+                bestY = hit.point.y;
+                bestPoint = hit.point;
+            }
+        }
+
+        if (bestY < float.PositiveInfinity)
+        {
+            return bestPoint + Vector3.up * groundOffset;
+        }
+
+        return position;
     }
 }

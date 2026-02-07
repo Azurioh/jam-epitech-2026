@@ -59,6 +59,7 @@ public class PlayerController : NetworkBehaviour
     private bool isAttacking;
     private bool isDead;
     private Health health;
+    private LagEffectReceiver lagReceiver;
 
     // Special attacks
     private float lastSpecial1Time = -999f;
@@ -77,6 +78,7 @@ public class PlayerController : NetworkBehaviour
         inputActions = new PlayerInputActions();
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+        lagReceiver = GetComponent<LagEffectReceiver>();
     }
 
     void OnEnable()
@@ -260,15 +262,40 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
+        bool isLagged = lagReceiver != null && lagReceiver.IsLagged;
+        float lagMultiplier = isLagged ? lagReceiver.GetSpeedMultiplier() : 1f;
+        float lagStep = Time.deltaTime;
+        bool allowLagStep = !isLagged || lagReceiver.TryConsumeLagStep(out lagStep);
+        float deltaTime = isLagged ? lagStep : Time.deltaTime;
+
+        if (animator != null)
+        {
+            if (isLagged)
+            {
+                animator.speed = 0f;
+                if (lagReceiver.TryGetAnimationDelta(out float animDelta))
+                {
+                    animator.Update(animDelta);
+                }
+            }
+            else
+            {
+                animator.speed = 1f;
+            }
+        }
+
         if (IsOwner)
         {
-            // Lire l'input de mouvement chaque frame
-            moveInput = inputActions.Player.Move.ReadValue<Vector2>();
-            moveInput = Vector2.ClampMagnitude(moveInput, 1f);
+            if (allowLagStep)
+            {
+                // Lire l'input de mouvement au tick de lag
+                moveInput = inputActions.Player.Move.ReadValue<Vector2>();
+                moveInput = Vector2.ClampMagnitude(moveInput, 1f);
 
-            HandleGroundCheck();
-            HandleMovement();
-            HandleGravity();
+                HandleGroundCheck();
+                HandleMovement(deltaTime, lagMultiplier);
+                HandleGravity(deltaTime, lagMultiplier);
+            }
 
             // Reset attaque après cooldown
             if (isAttacking && Time.time - lastAttackTime >= currentAttackDuration)
@@ -278,9 +305,12 @@ public class PlayerController : NetworkBehaviour
             }
 
             // Synchroniser l'état d'animation sur le réseau
-            networkAnimSpeed.Value = moveInput.magnitude;
-            networkIsGrounded.Value = isGrounded;
-            networkIsFalling.Value = velocity.y < -1f && !isGrounded;
+            if (allowLagStep)
+            {
+                networkAnimSpeed.Value = moveInput.magnitude;
+                networkIsGrounded.Value = isGrounded;
+                networkIsFalling.Value = velocity.y < -1f && !isGrounded;
+            }
         }
 
         // Mettre à jour les animations sur TOUS les clients
@@ -297,7 +327,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    void HandleMovement()
+    void HandleMovement(float deltaTime, float speedMultiplier)
     {
         if (moveInput.magnitude < 0.01f) return;
 
@@ -320,11 +350,11 @@ public class PlayerController : NetworkBehaviour
         if (desiredMoveDirection.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(desiredMoveDirection);
-            float rotationSmoothness = rotationSpeed * Time.deltaTime;
+            float rotationSmoothness = rotationSpeed * speedMultiplier * deltaTime;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothness);
         }
 
-        controller.Move(desiredMoveDirection * moveSpeed * Time.deltaTime);
+        controller.Move(desiredMoveDirection * (moveSpeed * speedMultiplier) * deltaTime);
     }
 
     void OnJumpPerformed(InputAction.CallbackContext context)
@@ -456,10 +486,10 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    void HandleGravity()
+    void HandleGravity(float deltaTime, float speedMultiplier)
     {
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        velocity.y += gravity * speedMultiplier * deltaTime;
+        controller.Move(velocity * speedMultiplier * deltaTime);
     }
 
     void UpdateAnimations()
