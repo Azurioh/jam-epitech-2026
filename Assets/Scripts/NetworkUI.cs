@@ -294,6 +294,6 @@ public class NetworkUI : MonoBehaviour
             GUILayout.EndArea();
         }
 
-        GUILayout.EndArea();
+        // GUILayout.EndArea();
     }
 }

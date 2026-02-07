@@ -10,9 +10,20 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed;
 
+    public enum AttackType
+    {
+        Melee,
+        Ranged
+    }
+
     [Header("Attack")]
+    [SerializeField] private AttackType attackType = AttackType.Melee;
     [SerializeField] private float attackCooldown;
     [SerializeField] private DamageOnContact weaponHitbox;
+
+    [Header("Ranged")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform shootPoint;
 
     [Header("Abilities System")]
     [Tooltip("Drag & drop un script qui implémente IAbility (ex: KnightShield)")]
@@ -283,7 +294,7 @@ public class PlayerController : NetworkBehaviour
             if (isAttacking && Time.time - lastAttackTime >= currentAttackDuration)
             {
                 isAttacking = false;
-                if (weaponHitbox != null) weaponHitbox.DisableHitbox();
+                if (attackType == AttackType.Melee && weaponHitbox != null) weaponHitbox.DisableHitbox();
             }
 
             // Synchroniser l'état d'animation sur le réseau
@@ -378,8 +389,17 @@ public class PlayerController : NetworkBehaviour
         lastAttackTime = Time.time;
         currentAttackDuration = attackCooldown;
         isAttacking = true;
-        Debug.Log($"[Player {OwnerClientId}] ATTACK - Cooldown: {attackCooldown}s, WeaponHitbox: {(weaponHitbox != null ? "OK" : "MISSING")}");
-        if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        Debug.Log($"[Player {OwnerClientId}] ATTACK ({attackType}) - Cooldown: {attackCooldown}s");
+
+        if (attackType == AttackType.Melee)
+        {
+            if (weaponHitbox != null) weaponHitbox.EnableHitbox();
+        }
+        else if (attackType == AttackType.Ranged)
+        {
+            ShootProjectile();
+        }
+
         animator.SetTrigger(attackHash);
         AttackServerRpc();
     }
@@ -388,6 +408,34 @@ public class PlayerController : NetworkBehaviour
     public void OnAttackEnd()
     {
         isAttacking = false;
+    }
+
+    private void ShootProjectile()
+    {
+        if (projectilePrefab == null) return;
+
+        Vector3 spawnPos = shootPoint != null ? shootPoint.position : transform.position + Vector3.up * 0.8f;
+        Vector3 direction = transform.forward;
+
+        // Tirer vers le centre de la caméra (visée 3ème personne)
+        Transform cam = (playerCamera != null) ? playerCamera.transform : Camera.main.transform;
+        if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, 100f))
+        {
+            direction = (hit.point - spawnPos).normalized;
+        }
+        else
+        {
+            direction = (cam.position + cam.forward * 100f - spawnPos).normalized;
+        }
+
+        ShootServerRpc(spawnPos, Quaternion.LookRotation(direction));
+    }
+
+    [ServerRpc]
+    private void ShootServerRpc(Vector3 spawnPos, Quaternion rotation)
+    {
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, rotation);
+        proj.GetComponent<NetworkObject>()?.Spawn();
     }
 
     [ServerRpc]
