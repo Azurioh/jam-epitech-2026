@@ -1098,7 +1098,7 @@ GameObject:
   - component: {fileID: 5021236801928017985}
   - component: {fileID: 2588643310057271000}
   - component: {fileID: 3393187425916906479}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Knight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1265,13 +1265,15 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 2
   attackCooldown: 0.8
+  special1Cooldown: 5
+  special2Cooldown: 8
   jumpForce: 2
   gravity: -20
   groundCheck: {fileID: 4438750386763271640}
   groundDistance: 0.2
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   isGrounded: 0
 --- !u!114 &2588643310057271000
 MonoBehaviour:

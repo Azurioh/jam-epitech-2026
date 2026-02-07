@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 6568729525763421942}
   - component: {fileID: 6909685327106446717}
   - component: {fileID: 3763394760167373429}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Babarian
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1800811430
+  GlobalObjectIdHash: 1036314630
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -355,8 +355,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 8
   rotationSpeed: 3
-  attackCooldown: 0.6
-  special1Cooldown: 5
+  attackCooldown: 0.2
+  weaponHitbox: {fileID: 9027230365185662701}
+  special1Cooldown: 7
   special2Cooldown: 8
   jumpForce: 2
   gravity: -20
@@ -364,7 +365,7 @@ MonoBehaviour:
   groundDistance: 0.2
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   isGrounded: 0
 --- !u!114 &6909685327106446717
 MonoBehaviour:
@@ -419,6 +420,8 @@ GameObject:
   - component: {fileID: 1982231725475833268}
   - component: {fileID: 3183366356505471505}
   - component: {fileID: 849317328173719259}
+  - component: {fileID: 8453839880727453382}
+  - component: {fileID: 9027230365185662701}
   m_Layer: 0
   m_Name: axe_1handed
   m_TagString: Untagged
@@ -498,6 +501,45 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8453839880727453382
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209671612296560398}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7143201, y: 1.244422, z: 0.18496186}
+  m_Center: {x: 0.23169668, y: 0.3491621, z: 0.00000046132814}
+--- !u!114 &9027230365185662701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209671612296560398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332fe8b183bd84a56b0b8c6aaf69c857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageOnContact
+  damage: 25
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  destroyOnHit: 0
+  hitCooldown: 0.5
 --- !u!1 &1671527841033103301
 GameObject:
   m_ObjectHideFlags: 0
