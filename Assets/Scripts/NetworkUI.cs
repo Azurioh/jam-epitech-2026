@@ -14,6 +14,9 @@ public class NetworkUI : MonoBehaviour
     private bool codeCopied = false;
     private float codeCopiedTimer = 0f;
 
+    // // Référence à la caméra principale de la scène (pour la désactiver/réactiver)
+    // public static Camera sceneMainCamera;
+
     private Texture2D _panelBackground;
     private Texture2D _buttonNormal;
     private Texture2D _buttonHover;
@@ -210,6 +213,7 @@ public class NetworkUI : MonoBehaviour
             );
 
             NetworkManager.Singleton.StartHost();
+            DisableSceneMainCamera();
             statusMessage = "Partie créée !";
         }
         catch (System.Exception e)
@@ -241,6 +245,7 @@ public class NetworkUI : MonoBehaviour
             );
 
             NetworkManager.Singleton.StartClient();
+            DisableSceneMainCamera();
             statusMessage = "Connecté !";
         }
         catch (System.Exception e)
@@ -250,6 +255,49 @@ public class NetworkUI : MonoBehaviour
         }
 
         isConnecting = false;
+    }
+
+    /// <summary>
+    /// Désactive la caméra principale de la scène pour éviter les conflits avec la caméra du joueur.
+    /// </summary>
+    private void DisableSceneMainCamera()
+    {
+        // Trouver la caméra de la scène (taggée MainCamera qui n'est pas celle du joueur)
+        // Camera[] cameras = Camera.allCameras;
+        // foreach (Camera cam in cameras)
+        // {
+        //     if (cam.CompareTag("MainCamera"))
+        //     {
+        //         sceneMainCamera = cam;
+        //         cam.gameObject.SetActive(false);
+        //         Debug.Log("[NetworkUI] Main camera de la scène désactivée");
+        //         break;
+        //     }
+        // }
+    }
+
+    /// <summary>
+    /// Réactive la caméra principale de la scène (pour le menu pause).
+    /// </summary>
+    public static void EnableSceneMainCamera()
+    {
+        // if (sceneMainCamera != null)
+        // {
+        //     sceneMainCamera.gameObject.SetActive(true);
+        //     Debug.Log("[NetworkUI] Main camera de la scène réactivée");
+        // }
+    }
+
+    /// <summary>
+    /// Désactive la caméra principale de la scène (quand on ferme le menu pause).
+    /// </summary>
+    public static void DisableSceneMainCameraStatic()
+    {
+        // if (sceneMainCamera != null)
+        // {
+        //     sceneMainCamera.gameObject.SetActive(false);
+        //     Debug.Log("[NetworkUI] Main camera de la scène désactivée");
+        // }
     }
 
     void OnGUI()

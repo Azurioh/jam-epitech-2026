@@ -34,6 +34,9 @@ public class PauseMenuManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         isPaused = false;
 
+        // Désactiver la caméra de la scène quand on reprend le jeu
+        NetworkUI.DisableSceneMainCameraStatic();
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -52,6 +55,9 @@ public class PauseMenuManager : MonoBehaviour
     {
         pauseMenuUI.SetActive(true);
         isPaused = true;
+
+        // Réactiver la caméra de la scène pour le menu pause
+        NetworkUI.EnableSceneMainCamera();
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
