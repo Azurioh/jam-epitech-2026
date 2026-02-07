@@ -6,6 +6,7 @@ public class Health : NetworkBehaviour, IDamageable
 {
     [SerializeField] public float maxHealth = 100f;
     [SerializeField] private bool destroyOnDeath = true;
+    [SerializeField] private float deathDelay = 2f;
     
     public NetworkVariable<float> _currentHealth = new NetworkVariable<float>(
         0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -62,7 +63,7 @@ public class Health : NetworkBehaviour, IDamageable
         
         if (destroyOnDeath)
         {
-            StartCoroutine(DestroyAfterDelay(0.05f));
+            StartCoroutine(DestroyAfterDelay(deathDelay));
         }
     }
 

@@ -50,11 +50,15 @@ public class PlayerController : NetworkBehaviour
     private readonly int attackHash = Animator.StringToHash("Attack");
     private readonly int special1Hash = Animator.StringToHash("Special1");
     private readonly int special2Hash = Animator.StringToHash("Special2");
+    private readonly int hitHash = Animator.StringToHash("Hit");
+    private readonly int deathHash = Animator.StringToHash("Death");
 
     // Attack
     private float lastAttackTime = -999f;
     private float currentAttackDuration;
     private bool isAttacking;
+    private bool isDead;
+    private Health health;
 
     // Special attacks
     private float lastSpecial1Time = -999f;
@@ -97,12 +101,19 @@ public class PlayerController : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
+        health = GetComponent<Health>();
+        if (health != null)
+        {
+            health._currentHealth.OnValueChanged += OnHealthChanged;
+        }
+
         var vars = Variables.Object(this.gameObject);
         moveSpeed = vars.Get<float>("MOVE_SPEED");
         rotationSpeed = vars.Get<float>("ROTATION_SPEED");
         attackCooldown = vars.Get<float>("ATTACK_COOLDOWN");
         jumpForce = vars.Get<float>("JUMP_FORCE");
         gravity = vars.Get<float>("GRAVITY");
+        weaponHitbox = vars.Get<DamageOnContact>("WEAPON_HITBOX");
         groundCheck = vars.Get<Transform>("GROUND_CHECK");
         special1Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_1");
         special2Cooldown = vars.Get<float>("SPECIAL_COOLDOWN_2");
@@ -218,6 +229,35 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (health != null)
+        {
+            health._currentHealth.OnValueChanged -= OnHealthChanged;
+        }
+    }
+
+    private void OnHealthChanged(float oldValue, float newValue)
+    {
+        if (isDead || animator == null) return;
+
+        if (newValue <= 0f)
+        {
+            isDead = true;
+            animator.SetTrigger(deathHash);
+            if (IsOwner)
+            {
+                inputActions.Player.Disable();
+            }
+            if (controller != null) controller.enabled = false;
+            enabled = false;
+        }
+        else if (newValue < oldValue)
+        {
+            animator.SetTrigger(hitHash);
+        }
+    }
+
     void Update()
     {
         if (IsOwner)
@@ -327,6 +367,7 @@ public class PlayerController : NetworkBehaviour
         lastAttackTime = Time.time;
         currentAttackDuration = attackCooldown;
         isAttacking = true;
+        Debug.Log("Attack");
         if (weaponHitbox != null) weaponHitbox.EnableHitbox();
         animator.SetTrigger(attackHash);
         AttackServerRpc();
