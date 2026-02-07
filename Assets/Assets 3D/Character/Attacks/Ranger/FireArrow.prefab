@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 5527585413965158292}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.61}
+  m_LocalPosition: {x: 0, y: 0, z: 0.537}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4846,6 +4846,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3309159019296699308}
   - component: {fileID: 1003877790419294394}
+  - component: {fileID: 9198689666971942126}
+  - component: {fileID: 8954587473185785910}
   m_Layer: 0
   m_Name: FireArrow
   m_TagString: Untagged
@@ -4863,7 +4865,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 547.869, y: 16.3, z: 481.4536}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6979770491960781217}
@@ -4883,11 +4885,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Arrow
   speed: 25
-  damage: 15
   lifetime: 5
+--- !u!114 &9198689666971942126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6000649946685960263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332fe8b183bd84a56b0b8c6aaf69c857, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageOnContact
+  damage: 40
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 16
+    m_Bits: 2048
+  destroyOnHit: 1
+  hitCooldown: 0.5
+--- !u!135 &8954587473185785910
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6000649946685960263}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.09
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6453161731809152041
 GameObject:
   m_ObjectHideFlags: 0
