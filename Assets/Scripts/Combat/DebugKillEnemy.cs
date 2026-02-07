@@ -18,13 +18,11 @@ public class DebugKillEnemy : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        // Touche K : inflige 50% des HP (2 coups pour tuer, ennemi split)
         if (Keyboard.current[multiHitKey].wasPressedThisFrame)
         {
             HitNearestEnemy(0.5f);
         }
 
-        // Touche L : one-shot (1 coup = pas de split)
         if (Keyboard.current[oneShotKey].wasPressedThisFrame)
         {
             HitNearestEnemy(1000f);
@@ -41,7 +39,6 @@ public class DebugKillEnemy : MonoBehaviour
             return;
         }
 
-        // Trouve l'ennemi le plus proche
         Transform nearest = null;
         float nearestDist = float.MaxValue;
 
@@ -60,12 +57,9 @@ public class DebugKillEnemy : MonoBehaviour
             Health health = nearest.GetComponent<Health>();
             if (health != null && health.IsAlive)
             {
-                // Si damageAmount < 1, c'est un pourcentage des HP actuels
                 float damage = damageAmount < 1f ? health.maxHealth * damageAmount : damageAmount;
                 
-                string hitType = damage >= health.maxHealth ? "ONE-SHOT (pas de split)" : $"{damage:F0} dégâts (split si mort)";
                 health.TakeDamage(damage);
-                Debug.Log($"[{hitType}] Hit: {nearest.name} ({health.CurrentHealth:F0} HP)");
                 
             }
         }

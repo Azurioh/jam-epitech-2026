@@ -87,13 +87,6 @@ public class WaveSpawner : MonoBehaviour
             _currentWaveIndex = i;
             yield return StartCoroutine(SpawnWave(waves[i]));
 
-            // // Attendre que tous les ennemis soient morts avant la prochaine wave
-            // while (_enemiesAlive > 0)
-            // {
-            //     yield return new WaitForSeconds(0.5f);
-            // }
-
-            // Délai entre les waves
             if (i < waves.Count - 1)
             {
                 yield return new WaitForSeconds(delayBetweenWaves);
@@ -128,19 +121,16 @@ public class WaveSpawner : MonoBehaviour
         Vector3 spawnPosition = GetSpawnPosition();
         GameObject enemy = Instantiate(prefab, spawnPosition, Quaternion.identity);
 
-        // Configure l'EnemyAI
         EnemyAI ai = enemy.GetComponent<EnemyAI>();
         if (ai != null)
         {
             ai.Initialize(playerMask, towerMask, wallMask);
         }
 
-        // Ajoute le splitter si besoin (selon la chance configurée)
         if (wave.splitChance > 0f && UnityEngine.Random.Range(0f, 100f) < wave.splitChance)
         {
             EnemySplitter splitter = enemy.AddComponent<EnemySplitter>();
             
-            // Configure le splitter via reflection
             var splitterType = typeof(EnemySplitter);
             
             var splitCountField = splitterType.GetField("splitCount", 
@@ -160,12 +150,10 @@ public class WaveSpawner : MonoBehaviour
             }
         }
 
-        // Track l'ennemi
         _enemiesAlive++;
         Health health = enemy.GetComponent<Health>();
         if (health != null)
         {
-            // Subscribe à la mort
             StartCoroutine(WaitForDeath(health));
         }
     }
@@ -183,16 +171,13 @@ public class WaveSpawner : MonoBehaviour
     {
         if (spawnPoints != null && spawnPoints.Length > 0)
         {
-            // Choisit un spawn point aléatoire
             Transform spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
             
-            // Ajoute un offset aléatoire dans le rayon
             Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * spawnRadius;
             return spawnPoint.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
         }
         else
         {
-            // Spawn autour du spawner
             Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * spawnRadius;
             return transform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
         }
@@ -200,7 +185,6 @@ public class WaveSpawner : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Dessine les spawn points
         if (spawnPoints != null)
         {
             Gizmos.color = Color.cyan;

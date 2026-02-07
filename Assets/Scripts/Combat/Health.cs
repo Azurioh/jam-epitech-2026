@@ -29,10 +29,9 @@ public class Health : MonoBehaviour, IDamageable
             return;
         }
 
-        // Détecte automatiquement les one-shots (1 coup = mort)
         if (!preventSplit && amount >= maxHealth)
         {
-            preventSplit = true; // One-shot = pas de split
+            preventSplit = true;
         }
 
         if (preventSplit)
