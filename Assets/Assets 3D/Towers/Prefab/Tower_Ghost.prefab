@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 1037928939002960063}
   - component: {fileID: 1858609738642180920}
   m_Layer: 7
-  m_Name: Turret_Ghost
+  m_Name: Tower_Ghost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

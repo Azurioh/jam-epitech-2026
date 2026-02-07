@@ -56,7 +56,6 @@ public class EnemyAI : MonoBehaviour
             Debug.LogError("EnemyAI requires a NavMeshAgent.", this);
         }
 
-        // Si aucune fallback target manuelle, chercher sur la layer
         if (fallbackTarget == null && fallbackTargetMask != 0)
         {
             fallbackTarget = FindFallbackTargetFromLayer();

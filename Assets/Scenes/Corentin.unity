@@ -542,6 +542,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
   destroyOnDeath: 1
+--- !u!114 &1439145346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439145343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bac2c32210e2c6a4e9c0d01e8c8d3201, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugKillEnemy
+  killRadius: 1000
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 2048
+  normalKillKey: 25
+  antiSplitKillKey: 26
 --- !u!1 &1537998037
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,15 +840,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaveSpawner
   waves:
-  - enemyCount: 10
+  - enemyCount: 1
     enemyType: 1
     spawnInterval: 0.05
-  - enemyCount: 20
-    enemyType: 1
-    spawnInterval: 0
-  - enemyCount: 30
-    enemyType: 1
-    spawnInterval: 0
+    splitChance: 100
+    splitCount: 2
+    copiesCanSplit: 1
   delayBetweenWaves: 50
   autoStart: 1
   meleePrefab: {fileID: 8564139064780085675, guid: 1a85bcb38f14a6347a8dc5887b59c79d, type: 3}
@@ -932,6 +947,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 531565302046813160, guid: 219005d08c7ae43d79913fa9ba4e1733, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1439145345}
+    - targetCorrespondingSourceObject: {fileID: 531565302046813160, guid: 219005d08c7ae43d79913fa9ba4e1733, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1439145346}
   m_SourcePrefab: {fileID: 100100000, guid: 219005d08c7ae43d79913fa9ba4e1733, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
