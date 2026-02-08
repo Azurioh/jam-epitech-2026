@@ -42,12 +42,27 @@ public class DamageOnContact : MonoBehaviour
 
     void TryDamage(GameObject target)
     {
-        if (((1 << target.layer) & enemyLayer) == 0) return;
+        Debug.Log($"TryDamage called on {target.name}, layer: {LayerMask.LayerToName(target.layer)}");
+        
+        if (((1 << target.layer) & enemyLayer) == 0)
+        {
+            Debug.LogWarning($"Layer check failed! Target layer '{LayerMask.LayerToName(target.layer)}' is not in enemyLayer mask.");
+            return;
+        }
 
         if (lastHitTime.TryGetValue(target, out float lastTime) && Time.time - lastTime < hitCooldown)
+        {
+            Debug.Log("Hit cooldown not expired yet");
             return;
+        }
 
-        IDamageable damageable = target.GetComponentInParent<IDamageable>();
+        // Chercher IDamageable sur le GameObject lui-même ou dans ses parents
+        IDamageable damageable = target.GetComponent<IDamageable>();
+        if (damageable == null)
+        {
+            damageable = target.GetComponentInParent<IDamageable>();
+        }
+        
         if (damageable != null)
         {
             lastHitTime[target] = Time.time;
@@ -55,6 +70,10 @@ public class DamageOnContact : MonoBehaviour
             Debug.Log("Dealt " + damage + " damage to " + target.name);
             if (destroyOnHit)
                 Destroy(gameObject);
+        }
+        else
+        {
+            Debug.LogWarning($"Hit {target.name} but no IDamageable found!");
         }
     }
 }

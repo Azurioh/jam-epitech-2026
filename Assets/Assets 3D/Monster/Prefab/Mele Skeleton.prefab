@@ -1926,6 +1926,7 @@ GameObject:
   - component: {fileID: 2005597276949155678}
   - component: {fileID: 1260985027189144030}
   - component: {fileID: 3843027062568723531}
+  - component: {fileID: -6492760390081007316}
   m_Layer: 11
   m_Name: Mele Skeleton
   m_TagString: Untagged
@@ -2041,7 +2042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2831586406
+  GlobalObjectIdHash: 3048047344
   InScenePlacedSourceGlobalObjectIdHash: 977067565
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2067,24 +2068,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   targetPriority: 0
+  attackType: 0
   detectionRadius: 12
   attackRange: 1.8
   attackCooldown: 1
   weaponHitbox: {fileID: 5426643672926736626}
+  projectilePrefab: {fileID: 0}
+  shootPoint: {fileID: 0}
+  knockbackDamping: 10
+  knockbackGroundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  knockbackGroundOffset: 0.05
   playerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   towerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   wallMask:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 0
   fallbackTarget: {fileID: 0}
   fallbackTargetName: GameObject
   fallbackTargetMask:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 0
   eye: {fileID: 0}
   _animator: {fileID: 6614721580407520373}
 --- !u!114 &3843027062568723531
@@ -2103,8 +2112,24 @@ MonoBehaviour:
   maxHealth: 100
   destroyOnDeath: 1
   deathDelay: 1
+  damageNumberHeight: 2
+  criticalThreshold: 50
   _currentHealth:
     m_InternalValue: 0
+--- !u!114 &-6492760390081007316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7949987444482257102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad00c929f90f845ac9124ed5969853d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobReward
+  ShowTopMostFoldoutHeaderGroup: 1
+  goldReward: 5
 --- !u!1 &8322595216938392090
 GameObject:
   m_ObjectHideFlags: 0
