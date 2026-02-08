@@ -52,7 +52,7 @@ GameObject:
   - component: {fileID: 2293295293921848547}
   m_Layer: 11
   m_Name: Big Ranger Skeleton
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   targetPriority: 0
   attackType: 1
-  detectionRadius: 30
+  detectionRadius: 90
   attackRange: 16
   attackCooldown: 3
   weaponHitbox: {fileID: 0}
@@ -218,7 +218,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   eye: {fileID: 0}
-  _animator: {fileID: 0}
+  _animator: {fileID: 5522571293743970114}
 --- !u!114 &5058837764027428540
 MonoBehaviour:
   m_ObjectHideFlags: 0

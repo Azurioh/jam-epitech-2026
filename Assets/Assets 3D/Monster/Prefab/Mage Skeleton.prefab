@@ -1345,7 +1345,7 @@ GameObject:
   - component: {fileID: 7411996976401965676}
   m_Layer: 11
   m_Name: Mage Skeleton
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1485,7 +1485,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   targetPriority: 0
   attackType: 1
-  detectionRadius: 12
+  detectionRadius: 90
   attackRange: 10
   attackCooldown: 3
   weaponHitbox: {fileID: 0}

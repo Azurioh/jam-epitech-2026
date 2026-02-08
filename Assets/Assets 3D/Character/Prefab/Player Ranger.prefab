@@ -861,6 +861,7 @@ MonoBehaviour:
     m_Bits: 256
   knockbackDamping: 10
   isGrounded: 0
+  respawnDelay: 30
 --- !u!114 &6041859340442542850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -902,8 +903,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 100
-  destroyOnDeath: 1
+  destroyOnDeath: 0
   deathDelay: 2
+  damageNumberHeight: 2
+  criticalThreshold: 50
   _currentHealth:
     m_InternalValue: 0
 --- !u!114 &6692531244769763608

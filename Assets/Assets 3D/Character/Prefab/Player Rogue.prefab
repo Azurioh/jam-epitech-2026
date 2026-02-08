@@ -2175,6 +2175,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7393603166515704957, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: destroyOnDeath
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: groundCheck
       value: 
@@ -2325,6 +2329,11 @@ MonoBehaviour:
   attackLockDuration: 0.5
   smokePrefab: {fileID: 322724974516350758, guid: d22d7c5eee5904e75b1a68e84936a7c0, type: 3}
   smokeDuration: 15
+  slowZoneRadius: 6
+  slowMultiplier: 0.4
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!114 &-7121515543671264092
 MonoBehaviour:
   m_ObjectHideFlags: 0

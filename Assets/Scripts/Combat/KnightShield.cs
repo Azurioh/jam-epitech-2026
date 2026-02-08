@@ -6,7 +6,7 @@ public class KnightShield : NetworkBehaviour, IAbility
     [Header("Shield Settings")]
     [SerializeField] private float cooldown = 5f;
     [SerializeField] private float attackLockDuration = 0.5f;
-    [SerializeField] private float shieldDuration = 3f;
+    [SerializeField] private float shieldDuration = 6f;
 
     private ShieldEffect shieldEffect;
     private float lastUseTime = -999f;
@@ -18,44 +18,25 @@ public class KnightShield : NetworkBehaviour, IAbility
 
     void Awake()
     {
-        Debug.Log("🛡️ KnightShield: Awake called");
         shieldEffect = GetComponent<ShieldEffect>();
-        if (shieldEffect == null)
-        {
-            Debug.LogError("🛡️ KnightShield: ShieldEffect component not found!");
-        }
-        else
-        {
-            Debug.Log("✅ KnightShield: ShieldEffect found!");
-        }
     }
 
     public void Activate()
     {
-        Debug.Log($"🛡️ KnightShield: Activate called! IsReady={IsReady}");
-
         if (!IsReady)
         {
-            Debug.Log($"🛡️ KnightShield: Not ready! {TimeUntilReady:F1}s");
             return;
         }
 
         lastUseTime = Time.time;
-        Debug.Log("🛡️ KnightShield: Activating shield effect...");
 
         if (shieldEffect != null)
         {
             shieldEffect.ActivateShieldForDuration(shieldDuration);
-            Debug.Log("✅ KnightShield: Shield effect activated!");
-        }
-        else
-        {
-            Debug.LogError("🛡️ KnightShield: shieldEffect is NULL!");
         }
 
         if (IsOwner)
         {
-            Debug.Log("🛡️ KnightShield: Sending ServerRpc...");
             ActivateShieldServerRpc();
         }
     }

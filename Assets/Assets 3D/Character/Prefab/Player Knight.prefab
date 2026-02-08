@@ -2422,6 +2422,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7393603166515704957, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: destroyOnDeath
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: groundCheck
       value: 
@@ -2572,6 +2576,7 @@ MonoBehaviour:
   cooldown: 8
   attackLockDuration: 0.5
   hulkDuration: 5
+  damageMultiplier: 2
 --- !u!114 &-1424983446406860500
 MonoBehaviour:
   m_ObjectHideFlags: 0

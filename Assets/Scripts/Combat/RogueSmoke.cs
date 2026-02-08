@@ -9,6 +9,11 @@ public class RogueSmoke : NetworkBehaviour, IAbility
     [SerializeField] private GameObject smokePrefab;
     [SerializeField] private float smokeDuration = 6f;
 
+    [Header("Slow Zone")]
+    [SerializeField] private float slowZoneRadius = 4f;
+    [SerializeField] private float slowMultiplier = 0.4f;
+    [SerializeField] private LayerMask enemyLayer;
+
     private float lastUseTime = -999f;
 
     public float Cooldown => cooldown;
@@ -65,6 +70,33 @@ public class RogueSmoke : NetworkBehaviour, IAbility
         }
 
         Destroy(smoke, smokeDuration);
+
+        // Spawn slow zone
+        SpawnSlowZone(transform.position);
+    }
+
+    private void SpawnSlowZone(Vector3 position)
+    {
+        GameObject zone = new GameObject("SlowZone");
+        zone.transform.position = position;
+
+        // Collider pour la détection
+        SphereCollider col = zone.AddComponent<SphereCollider>();
+        col.radius = slowZoneRadius;
+        col.isTrigger = true;
+
+        // Logique de slow
+        SlowZone slow = zone.AddComponent<SlowZone>();
+        slow.SetParameters(slowMultiplier, enemyLayer);
+
+        // Visuel AOE
+        AOEZone aoe = zone.AddComponent<AOEZone>();
+        aoe.radius = slowZoneRadius;
+        aoe.duration = smokeDuration;
+        aoe.zoneColor = new Color(0.5f, 0.2f, 0.8f, 0.6f);
+        aoe.edgeColor = new Color(0.7f, 0.3f, 1f, 0.8f);
+        aoe.affectedLayers = 0; // Pas de lag, juste le visuel
+        aoe.destroyOnEnd = true;
     }
 
     [ServerRpc]

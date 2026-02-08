@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem; // <--- Indispensable pour le nouveau système
+using UnityEngine.InputSystem;
+using TMPro;
 
 public class TowerSpawner : NetworkBehaviour
 {
@@ -9,22 +10,26 @@ public class TowerSpawner : NetworkBehaviour
     public Material invalidMat;
 
     [Header("Construction")]
-    public GameObject[] towerPrefabs; // Les différents types de tours (assignez-les dans l'Inspector)
-    public float towerRadius = 2.0f; // Rayon de détection (augmenté par défaut)
-    public float towerHeightCheck = 1.5f; // Hauteur à laquelle vérifier les collisions (centre de la tour)
+    public GameObject[] towerPrefabs;
+    public float towerRadius = 2.0f;
+    public float towerHeightCheck = 1.5f;
 
     [Header("Layers")]
     public LayerMask groundLayer;
     public LayerMask obstacleLayer;
 
-    // IMPORTANT : On remet la référence explicite à la caméra du joueur
     [SerializeField] private Camera playerCamera;
+
+    [Header("Prix")]
+    public int currentTowerPrice = 0;
 
     private GameObject currentGhost;
     private Renderer[] ghostRenderers;
     private bool isBuildMode = false;
-    private int selectedTowerIndex = 0; // Index de la tour actuellement sélectionnée
+    private int selectedTowerIndex = 0;
     private PlayerStats playerStats;
+    private TMP_Text textPriceTower;
+    private GameObject uiPriceTower;
 
     // La caméra est maintenant gérée entièrement par PlayerController
     public override void OnNetworkSpawn()
@@ -37,6 +42,10 @@ public class TowerSpawner : NetworkBehaviour
 
         // Récupérer le PlayerStats du joueur
         playerStats = GetComponent<PlayerStats>();
+
+        // Chercher les éléments UI tant qu'ils sont encore actifs
+        FindUIElements();
+        if (uiPriceTower != null) uiPriceTower.SetActive(false);
     }
 
     void Update()
@@ -81,6 +90,7 @@ public class TowerSpawner : NetworkBehaviour
         if (previousIndex != selectedTowerIndex && isBuildMode)
         {
             UpdateGhost();
+            UpdatePriceDisplay();
         }
     }
 
@@ -91,11 +101,30 @@ public class TowerSpawner : NetworkBehaviour
         if (isBuildMode)
         {
             UpdateGhost();
+            UpdatePriceDisplay();
+            if (uiPriceTower != null) uiPriceTower.SetActive(true);
         }
         else
         {
             if (currentGhost != null) Destroy(currentGhost);
+            if (uiPriceTower != null) uiPriceTower.SetActive(false);
         }
+    }
+
+    void FindUIElements()
+    {
+        GameObject textObj = GameObject.Find("TextPriceTower");
+        if (textObj != null)
+            textPriceTower = textObj.GetComponent<TMP_Text>();
+
+        uiPriceTower = GameObject.Find("UIPriceTower");
+    }
+
+    void UpdatePriceDisplay()
+    {
+        currentTowerPrice = GetSelectedTowerPrice();
+        if (textPriceTower != null)
+            textPriceTower.text = currentTowerPrice.ToString();
     }
 
     void UpdateGhost()

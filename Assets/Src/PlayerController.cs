@@ -74,6 +74,9 @@ public class PlayerController : NetworkBehaviour
     private readonly int hitHash = Animator.StringToHash("Hit");
     private readonly int deathHash = Animator.StringToHash("Death");
 
+    [Header("Respawn")]
+    [SerializeField] private float respawnDelay = 30f;
+
     // Attack
     private float lastAttackTime = -999f;
     private float currentAttackDuration;
@@ -81,6 +84,7 @@ public class PlayerController : NetworkBehaviour
     private bool isDead;
     private Health health;
     private LagEffectReceiver lagReceiver;
+    private Vector3 spawnPosition;
 
     // --- Animation sync sur le réseau ---
     private NetworkVariable<float> networkAnimSpeed = new NetworkVariable<float>(
@@ -155,6 +159,7 @@ public class PlayerController : NetworkBehaviour
             if (cc != null) cc.enabled = false;
             transform.position = spawns[index].transform.position;
             transform.rotation = spawns[index].transform.rotation;
+            spawnPosition = transform.position;
             if (cc != null) cc.enabled = true;
         }
 
@@ -268,20 +273,68 @@ public class PlayerController : NetworkBehaviour
         if (newValue <= 0f)
         {
             isDead = true;
-            Debug.Log($"[Player {OwnerClientId}] DEATH - HP dropped from {oldValue} to {newValue}");
+            Debug.Log($"[Player {OwnerClientId}] DEATH - HP dropped from {oldValue} to {newValue}. Respawn in {respawnDelay}s");
             animator.SetTrigger(deathHash);
             if (IsOwner)
             {
                 inputActions.Player.Disable();
             }
             if (controller != null) controller.enabled = false;
-            enabled = false;
+
+            if (IsServer)
+            {
+                StartCoroutine(RespawnCoroutine());
+            }
         }
         else if (newValue < oldValue)
         {
             Debug.Log($"[Player {OwnerClientId}] HIT - Took {oldValue - newValue} damage ({oldValue} -> {newValue} HP)");
             animator.SetTrigger(hitHash);
         }
+    }
+
+    private System.Collections.IEnumerator RespawnCoroutine()
+    {
+        yield return new WaitForSeconds(respawnDelay);
+
+        // Reset HP
+        if (health != null)
+        {
+            health._currentHealth.Value = health.maxHealth;
+        }
+
+        // Téléporter au spawn
+        RespawnClientRpc(spawnPosition);
+    }
+
+    [ClientRpc]
+    private void RespawnClientRpc(Vector3 position)
+    {
+        isDead = false;
+
+        // Reset animator
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+        }
+
+        // Téléporter
+        if (controller != null) controller.enabled = false;
+        transform.position = position;
+        if (controller != null) controller.enabled = true;
+
+        // Réactiver les inputs
+        if (IsOwner)
+        {
+            inputActions.Player.Enable();
+        }
+
+        // Reset velocity
+        velocity = Vector3.zero;
+        knockbackVelocity = Vector3.zero;
+
+        Debug.Log($"[Player {OwnerClientId}] RESPAWNED at {position}");
     }
 
     void Update()

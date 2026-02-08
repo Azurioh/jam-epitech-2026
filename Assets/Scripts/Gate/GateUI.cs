@@ -35,7 +35,7 @@ public class GateUI : MonoBehaviour
 
         if (gate == null || healthImage == null) return;
 
-        float percent = (float)gate.health / gate.maxHealth;
+        float percent = (float)gate.health.Value / gate.maxHealth.Value;
 
         healthImage.fillAmount = percent;
         healthImage.color = GetColor(percent);
