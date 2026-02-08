@@ -78,7 +78,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
       propertyPath: damage
-      value: 50
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
       propertyPath: knockbackForce
@@ -91,6 +91,10 @@ PrefabInstance:
     - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
       propertyPath: ragdollOnImpact
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
+      propertyPath: knockbackDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7026562225896680802, guid: 70179a137359a415d8224ec2e34bd965, type: 3}
       propertyPath: knockbackOnImpact

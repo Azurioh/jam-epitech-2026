@@ -132,6 +132,7 @@ MonoBehaviour:
   - {fileID: 5120775498591660775, guid: e4dcf59af4bed4f64840526db5b3f8e7, type: 3}
   - {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
   - {fileID: 3700715196704607379, guid: a28ed93bb0de64aa596217354019f62c, type: 3}
+  - {fileID: 7723959940281505156, guid: c6698ea9272614fbea47002d933f1486, type: 3}
   towerRadius: 10
   towerHeightCheck: 1.5
   groundLayer:
@@ -286,6 +287,8 @@ MonoBehaviour:
   maxHealth: 100
   destroyOnDeath: 1
   deathDelay: 2
+  damageNumberHeight: 2
+  criticalThreshold: 50
   _currentHealth:
     m_InternalValue: 0
 --- !u!114 &-6796174750061053545

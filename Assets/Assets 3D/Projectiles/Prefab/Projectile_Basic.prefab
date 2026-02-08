@@ -250,10 +250,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HomingProjectile
   ShowTopMostFoldoutHeaderGroup: 1
   speed: 30
-  damage: 10
+  damage: 40
   spawnAoeZone: 0
   aoeDuration: 10
   groundMask:
     serializedVersion: 2
     m_Bits: 4294967295
   groundOffset: 0.05
+  knockbackOnImpact: 0
+  knockbackRadius: 6
+  knockbackForce: 50
+  knockbackUpwardsModifier: 1.5
+  knockbackVelocityBoost: 20
+  knockbackUpwardsVelocity: 6
+  knockbackDuration: 0.35
+  knockbackMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  shockwaveOnImpact: 0
+  shockwaveMaxRadius: 6
+  shockwaveDuration: 0.5
+  shockwaveStartWidth: 0.25
+  shockwaveEndWidth: 0.05
+  shockwaveColor: {r: 0.6, g: 0.9, b: 1, a: 0.9}
+  shockwaveSegments: 48

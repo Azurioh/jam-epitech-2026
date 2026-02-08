@@ -2289,18 +2289,6 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 8974930579916801784}
-    - target: {fileID: 1938948991223724642, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
-      propertyPath: towerPrefabs.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1938948991223724642, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
-      propertyPath: 'towerPrefabs.Array.data[4]'
-      value: 
-      objectReference: {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
-    - target: {fileID: 1938948991223724642, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
-      propertyPath: 'towerPrefabs.Array.data[5]'
-      value: 
-      objectReference: {fileID: 3700715196704607379, guid: 0a93e773679074bb7b694ba625e3af05, type: 3}
     - target: {fileID: 3568932750805525917, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: m_Actions
       value: 
@@ -2371,6 +2359,8 @@ MonoBehaviour:
   attackLockDuration: 1.5
   aoeRadius: 5
   damage: 50
+  valkyrieDuration: 5
+  damageMultiplier: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
