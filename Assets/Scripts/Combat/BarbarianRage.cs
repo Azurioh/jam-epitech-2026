@@ -7,7 +7,7 @@ public class BarbarianRage : NetworkBehaviour, IAbility
     [SerializeField] private float cooldown = 6f;
     [SerializeField] private float attackLockDuration = 0.3f;
     [SerializeField] private float rageDuration = 4f;
-    [SerializeField] private float damageMultiplier = 1.5f;
+    [SerializeField] private float damageMultiplier = 1.7f;
     [SerializeField] private Color rageColor = new Color(0.6f, 0.1f, 0.1f, 1f);
 
     [Header("Beer Bottle")]
@@ -17,7 +17,7 @@ public class BarbarianRage : NetworkBehaviour, IAbility
 
     private float lastUseTime = -999f;
     private bool isRageActive = false;
-    private Weapon weaponComponent;
+    private DamageOnContact damageOnContact;
     private float normalDamage;
     private ParticleSystem rageParticles;
 
@@ -28,15 +28,15 @@ public class BarbarianRage : NetworkBehaviour, IAbility
 
     void Awake()
     {
-        weaponComponent = GetComponentInChildren<Weapon>();
+        damageOnContact = GetComponentInChildren<DamageOnContact>();
 
-        if (weaponComponent != null)
+        if (damageOnContact != null)
         {
-            var damageField = typeof(Weapon).GetField("damage",
+            var damageField = typeof(DamageOnContact).GetField("damage",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (damageField != null)
             {
-                normalDamage = (float)damageField.GetValue(weaponComponent);
+                normalDamage = (float)damageField.GetValue(damageOnContact);
             }
         }
 
@@ -198,14 +198,14 @@ public class BarbarianRage : NetworkBehaviour, IAbility
             rageParticles.Play();
         }
 
-        if (weaponComponent != null)
+        if (damageOnContact != null)
         {
-            var damageField = typeof(Weapon).GetField("damage",
+            var damageField = typeof(DamageOnContact).GetField("damage",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (damageField != null)
             {
                 float boostedDamage = normalDamage * damageMultiplier;
-                damageField.SetValue(weaponComponent, boostedDamage);
+                damageField.SetValue(damageOnContact, boostedDamage);
             }
         }
 
@@ -213,13 +213,13 @@ public class BarbarianRage : NetworkBehaviour, IAbility
         yield return new WaitForSeconds(rageDuration);
 
 
-        if (weaponComponent != null)
+        if (damageOnContact != null)
         {
-            var damageField = typeof(Weapon).GetField("damage",
+            var damageField = typeof(DamageOnContact).GetField("damage",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (damageField != null)
             {
-                damageField.SetValue(weaponComponent, normalDamage);
+                damageField.SetValue(damageOnContact, normalDamage);
             }
         }
 
