@@ -312,6 +312,13 @@ public class PlayerController : NetworkBehaviour
     {
         isDead = false;
 
+        // Reset animator
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+        }
+
         // Téléporter
         if (controller != null) controller.enabled = false;
         transform.position = position;

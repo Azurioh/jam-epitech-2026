@@ -2329,6 +2329,11 @@ MonoBehaviour:
   attackLockDuration: 0.5
   smokePrefab: {fileID: 322724974516350758, guid: d22d7c5eee5904e75b1a68e84936a7c0, type: 3}
   smokeDuration: 15
+  slowZoneRadius: 6
+  slowMultiplier: 0.4
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!114 &-7121515543671264092
 MonoBehaviour:
   m_ObjectHideFlags: 0
