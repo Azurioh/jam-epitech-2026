@@ -1,8 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
-using TMPro;
 
-public class CastleInit : MonoBehaviour
+public class CastleInit : NetworkBehaviour
 {
-    public int health = 5000;
-    public int maxHealth = 5000;
+    public NetworkVariable<int> health = new NetworkVariable<int>(5000);
+    public NetworkVariable<int> maxHealth = new NetworkVariable<int>(5000);
 }

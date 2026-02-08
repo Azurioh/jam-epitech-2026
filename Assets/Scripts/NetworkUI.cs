@@ -245,6 +245,10 @@ public class NetworkUI : MonoBehaviour
             );
 
             NetworkManager.Singleton.StartClient();
+
+            // Quand connecté, envoie le choix de classe au serveur
+            NetworkManager.Singleton.OnClientConnectedCallback += OnLocalClientConnected;
+
             DisableSceneMainCamera();
             statusMessage = "Connecté !";
         }
@@ -298,6 +302,26 @@ public class NetworkUI : MonoBehaviour
         //     sceneMainCamera.gameObject.SetActive(false);
         //     Debug.Log("[NetworkUI] Main camera de la scène désactivée");
         // }
+    }
+
+    private void OnLocalClientConnected(ulong clientId)
+    {
+        // Ne réagir que pour notre propre connexion
+        if (clientId != NetworkManager.Singleton.LocalClientId) return;
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnLocalClientConnected;
+
+        // Trouver le PlayerSpawner et envoyer notre choix de classe
+        var spawner = FindObjectOfType<PlayerSpawner>();
+        if (spawner != null)
+        {
+            spawner.RequestSpawnServerRpc(CharacterSelector.SelectedCharacterIndex);
+            Debug.Log($"[NetworkUI] Sent character index {CharacterSelector.SelectedCharacterIndex} to server");
+        }
+        else
+        {
+            Debug.LogError("[NetworkUI] PlayerSpawner not found in scene!");
+        }
     }
 
     void OnGUI()
