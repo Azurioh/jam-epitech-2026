@@ -51,8 +51,8 @@ public class PlayerHUD : MonoBehaviour
         }
 
         if (castleScript) {
-            float current = castleScript.health;
-            float max = castleScript.maxHealth;
+            float current = castleScript.health.Value;
+            float max = castleScript.maxHealth.Value;
             
             if (castleBar) castleBar.fillAmount = current / max;
         }
