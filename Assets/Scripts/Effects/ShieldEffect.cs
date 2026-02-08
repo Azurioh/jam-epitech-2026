@@ -191,6 +191,11 @@ public class ShieldEffect : MonoBehaviour
         Invoke(nameof(DeactivateShield), duration);
     }
 
+    public bool IsShieldActive()
+    {
+        return isActive;
+    }
+
     private IEnumerator FadeIn()
     {
         float elapsed = 0f;
