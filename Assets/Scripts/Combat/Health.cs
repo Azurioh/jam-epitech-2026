@@ -44,6 +44,13 @@ public class Health : NetworkBehaviour, IDamageable
         {
             return;
         }
+
+        ShieldEffect shield = GetComponent<ShieldEffect>();
+        if (shield != null && shield.IsShieldActive())
+        {
+            SpawnDamageNumberClientRpc(0f, false, false);
+            return;
+        }
         if (!preventSplit && amount >= maxHealth)
         {
             preventSplit = true;
