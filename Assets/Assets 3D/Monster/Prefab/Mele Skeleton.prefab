@@ -1117,7 +1117,7 @@ MonoBehaviour:
   damage: 25
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 4288
+    m_Bits: 4800
   destroyOnHit: 0
   hitCooldown: 0.5
 --- !u!1 &4484477781511426223
@@ -2091,6 +2091,9 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 0
+  castleMask:
+    serializedVersion: 2
+    m_Bits: 512
   fallbackTarget: {fileID: 0}
   fallbackTargetName: GameObject
   fallbackTargetMask:
@@ -2098,6 +2101,7 @@ MonoBehaviour:
     m_Bits: 0
   eye: {fileID: 0}
   _animator: {fileID: 6614721580407520373}
+  _currentTarget: {fileID: 0}
 --- !u!114 &3843027062568723531
 MonoBehaviour:
   m_ObjectHideFlags: 0

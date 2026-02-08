@@ -596,6 +596,9 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 0
+  castleMask:
+    serializedVersion: 2
+    m_Bits: 512
   fallbackTarget: {fileID: 0}
   fallbackTargetName: GameObject
   fallbackTargetMask:
@@ -603,6 +606,7 @@ MonoBehaviour:
     m_Bits: 0
   eye: {fileID: 0}
   _animator: {fileID: 4388404483740415594}
+  _currentTarget: {fileID: 0}
 --- !u!114 &7019834564915613455
 MonoBehaviour:
   m_ObjectHideFlags: 0

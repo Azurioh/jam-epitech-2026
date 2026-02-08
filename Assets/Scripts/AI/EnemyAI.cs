@@ -39,7 +39,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private LayerMask playerMask;
     [SerializeField] private LayerMask towerMask;
     [SerializeField] private LayerMask wallMask;
-
+    [SerializeField] private LayerMask castleMask; // Nouvelle layer pour le château
 
     [SerializeField] private Transform fallbackTarget;
     [Header("Fallback")]
@@ -55,7 +55,7 @@ public class EnemyAI : MonoBehaviour
     private NavMeshAgent _agent;
     public Animator _animator;
     private Transform _mainTarget;
-    private Transform _currentTarget;
+    public Transform _currentTarget;
     private float _nextAttackTime;
     private float _lastAttackTime = -999f;
     private float _nextRetargetTime;
@@ -80,8 +80,51 @@ public class EnemyAI : MonoBehaviour
     private readonly int hitHash = Animator.StringToHash("Hit");
     private readonly int deathHash = Animator.StringToHash("Death");
 
-    private int TargetMask => playerMask | towerMask | wallMask;
-    private int ObstacleMask => playerMask | towerMask | wallMask;
+    private int TargetMask => playerMask | towerMask | wallMask | castleMask;
+    private int ObstacleMask => playerMask | towerMask | wallMask | castleMask;
+
+    /// <summary>
+    /// Retourne la distance entre cet ennemi et le point le plus proche du collider de la cible.
+    /// Fallback sur transform.position si pas de collider.
+    /// </summary>
+    private float DistanceToTarget(Transform target)
+    {
+        Collider col = target.GetComponentInChildren<Collider>();
+        if (col != null)
+        {
+            Vector3 closestPoint = col.ClosestPoint(transform.position);
+            return Vector3.Distance(transform.position, closestPoint);
+        }
+        return Vector3.Distance(transform.position, target.position);
+    }
+
+    /// <summary>
+    /// Retourne le point le plus proche du collider de la cible.
+    /// Fallback sur transform.position si pas de collider.
+    /// </summary>
+    private Vector3 ClosestPointOnTarget(Transform target)
+    {
+        Collider col = target.GetComponentInChildren<Collider>();
+        if (col != null)
+        {
+            return col.ClosestPoint(transform.position);
+        }
+        return target.position;
+    }
+
+    /// <summary>
+    /// Vérifie qu'une cible est toujours valide (non null, active, et vivante).
+    /// </summary>
+    private bool IsValidTarget(Transform target)
+    {
+        if (target == null) return false;
+        if (!target.gameObject.activeInHierarchy) return false;
+
+        Health h = target.GetComponentInParent<Health>();
+        if (h != null && !h.IsAlive) return false;
+
+        return true;
+    }
 
     public void Initialize(LayerMask playerLayer, LayerMask towerLayer, LayerMask wallLayer)
     {
@@ -191,7 +234,21 @@ public class EnemyAI : MonoBehaviour
             _agent.speed = _baseAgentSpeed * lagMultiplier;
         }
 
-        if (Time.time >= _nextRetargetTime && _currentTarget == null)
+        // Invalider les cibles mortes ou désactivées
+        if (!IsValidTarget(_mainTarget))
+        {
+            _mainTarget = null;
+        }
+        if (!IsValidTarget(_currentTarget))
+        {
+            _currentTarget = null;
+        }
+        if (!IsValidTarget(_cachedFallbackWall))
+        {
+            _cachedFallbackWall = null;
+        }
+
+        if (Time.time >= _nextRetargetTime || _mainTarget == null)
         {
             _mainTarget = AcquireMainTarget();
             _nextRetargetTime = Time.time + 0.35f;
@@ -199,7 +256,8 @@ public class EnemyAI : MonoBehaviour
 
         if (_mainTarget != null)
         {
-            _currentTarget = ResolveBlockingTarget(_mainTarget) ?? _mainTarget;
+            Transform blocking = ResolveBlockingTarget(_mainTarget);
+            _currentTarget = blocking ?? _mainTarget;
         }
         else
         {
@@ -217,17 +275,17 @@ public class EnemyAI : MonoBehaviour
                 }
 
                 Transform targetToMoveTo = _cachedFallbackWall != null ? _cachedFallbackWall : fallbackTarget;
-                float distance = Vector3.Distance(transform.position, targetToMoveTo.position);
+                float distance = DistanceToTarget(targetToMoveTo);
                 bool inAttackRange = distance <= attackRange;
                 
                 _agent.isStopped = inAttackRange;
                 if (!inAttackRange)
                 {
-                    // Ne mettre à jour la destination que si elle a changé significativement
-                    if (Vector3.Distance(_lastDestination, targetToMoveTo.position) > 0.1f)
+                    Vector3 movePoint = ClosestPointOnTarget(targetToMoveTo);
+                    if (Vector3.Distance(_lastDestination, movePoint) > 0.1f)
                     {
-                        _agent.SetDestination(targetToMoveTo.position);
-                        _lastDestination = targetToMoveTo.position;
+                        _agent.SetDestination(movePoint);
+                        _lastDestination = movePoint;
                     }
                 }
                 else if (_cachedFallbackWall != null)
@@ -242,7 +300,7 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            float distance = Vector3.Distance(transform.position, _currentTarget.position);
+            float distance = DistanceToTarget(_currentTarget);
             bool inAttackRange = distance <= attackRange;
 
             if (attackType == AttackType.Melee)
@@ -250,11 +308,11 @@ public class EnemyAI : MonoBehaviour
                 _agent.isStopped = inAttackRange;
                 if (!inAttackRange)
                 {
-                    // Ne mettre à jour la destination que si elle a changé significativement
-                    if (Vector3.Distance(_lastDestination, _currentTarget.position) > 0.5f)
+                    Vector3 movePoint = ClosestPointOnTarget(_currentTarget);
+                    if (Vector3.Distance(_lastDestination, movePoint) > 0.5f)
                     {
-                        _agent.SetDestination(_currentTarget.position);
-                        _lastDestination = _currentTarget.position;
+                        _agent.SetDestination(movePoint);
+                        _lastDestination = movePoint;
                     }
                 }
             }
@@ -264,11 +322,11 @@ public class EnemyAI : MonoBehaviour
                 _agent.isStopped = inAttackRange;
                 if (!inAttackRange)
                 {
-                    // Ne mettre à jour la destination que si elle a changé significativement
-                    if (Vector3.Distance(_lastDestination, _currentTarget.position) > 0.5f)
+                    Vector3 movePoint = ClosestPointOnTarget(_currentTarget);
+                    if (Vector3.Distance(_lastDestination, movePoint) > 0.5f)
                     {
-                        _agent.SetDestination(_currentTarget.position);
-                        _lastDestination = _currentTarget.position;
+                        _agent.SetDestination(movePoint);
+                        _lastDestination = movePoint;
                     }
                 }
             }
@@ -359,6 +417,13 @@ public class EnemyAI : MonoBehaviour
 
     private Transform AcquireMainTarget()
     {
+        // Vérifier d'abord si le château est accessible (pas de mur entre nous)
+        Transform castle = GetNearestTarget(castleMask);
+        if (castle != null && !IsBlockedByWall(castle))
+        {
+            return castle;
+        }
+
         switch (targetPriority)
         {
             case TargetPriority.PreferPlayers:
@@ -368,6 +433,20 @@ public class EnemyAI : MonoBehaviour
             default:
                 return GetNearestTarget(TargetMask);
         }
+    }
+
+    private bool IsBlockedByWall(Transform target)
+    {
+        Vector3 origin = eye != null ? eye.position : transform.position + Vector3.up * 0.6f;
+        Vector3 direction = target.position - origin;
+        float distance = direction.magnitude;
+
+        if (Physics.Raycast(origin, direction.normalized, out RaycastHit hit, distance, wallMask, QueryTriggerInteraction.Ignore))
+        {
+            // Un mur bloque le chemin vers le château
+            return hit.transform != target;
+        }
+        return false;
     }
 
     private Transform GetNearestTarget(int mask)
@@ -380,11 +459,14 @@ public class EnemyAI : MonoBehaviour
         {
             Transform candidate = hits[i].transform;
 
+            // Ignorer les objets désactivés (gates détruits par exemple)
+            if (!candidate.gameObject.activeInHierarchy) continue;
+
             // Ignorer les cibles mortes (0 HP)
             Health targetHealth = candidate.GetComponentInParent<Health>();
             if (targetHealth != null && !targetHealth.IsAlive) continue;
 
-            float dist = Vector3.Distance(transform.position, candidate.position);
+            float dist = DistanceToTarget(candidate);
             if (dist < bestDist)
             {
                 bestDist = dist;
@@ -397,7 +479,7 @@ public class EnemyAI : MonoBehaviour
 
     private Transform ResolveBlockingTarget(Transform mainTarget)
     {
-        if (mainTarget == null)
+        if (!IsValidTarget(mainTarget))
         {
             return null;
         }
@@ -440,7 +522,7 @@ public class EnemyAI : MonoBehaviour
                 continue;
             }
 
-            float dist = Vector3.Distance(transform.position, root.position);
+            float dist = DistanceToTarget(root);
             if (dist < bestDist)
             {
                 bestDist = dist;
@@ -464,7 +546,7 @@ public class EnemyAI : MonoBehaviour
             {
                 continue;
             }
-            float distance = Vector3.Distance(transform.position, root.position);
+            float distance = DistanceToTarget(root);
 
             // Prendre le mur le plus proche
             if (distance < bestDist)
@@ -479,12 +561,10 @@ public class EnemyAI : MonoBehaviour
 
     private void TryAttack(Transform target)
     {
-        // Debug.Log("Trying to attack: " + target.name);
         if (Time.time < _nextAttackTime) return;
 
-        // Ne pas attaquer les cibles mortes
-        Health targetHealth = target.GetComponentInParent<Health>();
-        if (targetHealth != null && !targetHealth.IsAlive) return;
+        // Ne pas attaquer les cibles mortes ou désactivées
+        if (!IsValidTarget(target)) return;
 
         // Regarder la cible avant d'attaquer
         Vector3 lookDir = (target.position - transform.position);

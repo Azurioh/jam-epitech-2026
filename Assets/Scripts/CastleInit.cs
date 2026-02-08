@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class CastleInit : NetworkBehaviour
+public class CastleInit : NetworkBehaviour, IDamageable
 {
     [SerializeField] private int startHealth = 5000;
     [SerializeField] private int startMaxHealth = 5000;
@@ -18,9 +18,9 @@ public class CastleInit : NetworkBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (!IsServer) return;
-        health.Value = Mathf.Max(0, health.Value - damage);
+        health.Value = Mathf.Max(0, health.Value - (int)damage);
     }
 }

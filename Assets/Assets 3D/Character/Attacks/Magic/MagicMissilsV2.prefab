@@ -4903,7 +4903,7 @@ MonoBehaviour:
   damage: 35
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 4288
+    m_Bits: 4800
   destroyOnHit: 1
   hitCooldown: 0.5
 --- !u!135 &591661869286153017
