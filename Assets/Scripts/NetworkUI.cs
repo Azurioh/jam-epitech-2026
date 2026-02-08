@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class NetworkUI : MonoBehaviour
 {
-    public static string joinCode = "?";
+    public static string joinCode = "";
     private string statusMessage = "";
     private bool isConnecting = false;
     private bool codeCopied = false;
