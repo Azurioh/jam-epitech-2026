@@ -278,7 +278,7 @@ PrefabInstance:
     - target: {fileID: 575548272523294226, guid: 5ac7e3d7733b58d479551eabb93a2084, type: 3}
       propertyPath: NetworkConfig.PlayerPrefab
       value: 
-      objectReference: {fileID: 7909369869873242202, guid: 108ec00514d0f43eb8cd7c1250274465, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 4869619169389637265, guid: 5ac7e3d7733b58d479551eabb93a2084, type: 3}
       propertyPath: m_Name
       value: NetworkManager
@@ -613,7 +613,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1459173089
 MonoBehaviour:
   m_ObjectHideFlags: 0
