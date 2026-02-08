@@ -14,7 +14,7 @@ public class HUDController : MonoBehaviour
 
     [Header("Chaos System")]
     public Slider stabilityBar;
-    
+
     [Header("Animation")]
     public HUDAnimator animator;
 
@@ -31,7 +31,7 @@ public class HUDController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
+
         if (animator == null) animator = GetComponent<HUDAnimator>();
     }
 

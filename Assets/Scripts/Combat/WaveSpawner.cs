@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -72,17 +73,34 @@ public class WaveSpawner : NetworkBehaviour
     [SerializeField] private LayerMask towerMask;
     [SerializeField] private LayerMask wallMask;
 
-    private int _currentWaveIndex = -1;
-    private int _enemiesAlive;
+    private NetworkVariable<int> _currentWaveIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<int> _enemiesAlive = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private bool _isSpawning;
 
-    public int CurrentWaveIndex => _currentWaveIndex;
+    private TextMeshProUGUI _waveCountText;
+    private TextMeshProUGUI _nbEnemyAliveText;
+
+    public NetworkVariable<int> CurrentWave => _currentWaveIndex;
+    public int CurrentWaveIndex => _currentWaveIndex.Value;
     public int TotalWaves => waves.Count;
-    public bool IsComplete => _currentWaveIndex >= waves.Count - 1 && _enemiesAlive == 0;
+    public NetworkVariable<int> EnemiesAlive => _enemiesAlive;
+    public bool IsComplete => _currentWaveIndex.Value >= waves.Count - 1 && _enemiesAlive.Value == 0;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        var waveGo = GameObject.Find("WaveCount");
+        if (waveGo != null) _waveCountText = waveGo.GetComponent<TextMeshProUGUI>();
+
+        var enemyGo = GameObject.Find("NbEnemyAlive");
+        if (enemyGo != null) _nbEnemyAliveText = enemyGo.GetComponent<TextMeshProUGUI>();
+
+        _currentWaveIndex.OnValueChanged += (_, newVal) => UpdateWaveUI(newVal);
+        _enemiesAlive.OnValueChanged += (_, newVal) => UpdateEnemiesUI(newVal);
+
+        UpdateWaveUI(_currentWaveIndex.Value);
+        UpdateEnemiesUI(_enemiesAlive.Value);
         
         if (!IsServer) return;
         
@@ -188,7 +206,7 @@ public class WaveSpawner : NetworkBehaviour
     {
         if (!IsServer) return;
         
-        if (!_isSpawning && _currentWaveIndex < waves.Count - 1)
+        if (!_isSpawning && _currentWaveIndex.Value < waves.Count - 1)
         {
             StartCoroutine(SpawnWavesRoutine());
         }
@@ -198,18 +216,18 @@ public class WaveSpawner : NetworkBehaviour
     {
         _isSpawning = true;
 
-        for (int i = _currentWaveIndex + 1; i < waves.Count; i++)
+        for (int i = _currentWaveIndex.Value + 1; i < waves.Count; i++)
         {
-            _currentWaveIndex = i;
+            _currentWaveIndex.Value = i;
             yield return StartCoroutine(SpawnWave(waves[i]));
 
             // Attendre que tous les ennemis de la wave actuelle soient morts
-            while (_enemiesAlive > 0)
+            while (_enemiesAlive.Value > 0)
             {
                 yield return new WaitForSeconds(0.5f);
             }
 
-            Debug.Log($"Wave {_currentWaveIndex + 1} terminée ! Tous les ennemis sont morts.");
+            Debug.Log($"Wave {_currentWaveIndex.Value + 1} terminée ! Tous les ennemis sont morts.");
 
             // Délai avant la prochaine wave
             if (i < waves.Count - 1)
@@ -223,17 +241,17 @@ public class WaveSpawner : NetworkBehaviour
             Debug.Log("Mode infini activé ! Waves random avec tous les Big.");
             while (true)
             {
-                _currentWaveIndex++;
+                _currentWaveIndex.Value++;
                 Wave randomWave = GenerateRandomBigWave();
                 yield return StartCoroutine(SpawnWave(randomWave));
 
                 // Attendre que tous les ennemis soient morts
-                while (_enemiesAlive > 0)
+                while (_enemiesAlive.Value > 0)
                 {
                     yield return new WaitForSeconds(0.5f);
                 }
 
-                Debug.Log($"Wave infinie {_currentWaveIndex + 1} terminée !");
+                Debug.Log($"Wave infinie {_currentWaveIndex.Value + 1} terminée !");
                 yield return new WaitForSeconds(delayBetweenWaves);
             }
         }
@@ -261,7 +279,7 @@ public class WaveSpawner : NetworkBehaviour
 
     private IEnumerator SpawnWave(Wave wave)
     {
-        Debug.Log($"Wave {_currentWaveIndex + 1} commence : {wave.enemyCount} ennemis");
+        Debug.Log($"Wave {_currentWaveIndex.Value + 1} commence : {wave.enemyCount} ennemis");
 
         for (int i = 0; i < wave.enemyCount; i++)
         {
@@ -336,7 +354,7 @@ public class WaveSpawner : NetworkBehaviour
             }
         }
 
-        _enemiesAlive++;
+        _enemiesAlive.Value++;
         Health health = enemy.GetComponent<Health>();
         if (health != null)
         {
@@ -383,7 +401,7 @@ public class WaveSpawner : NetworkBehaviour
         {
             yield return new WaitForSeconds(0.5f);
         }
-        _enemiesAlive--;
+        _enemiesAlive.Value--;
     }
 
     private Vector3 GetSpawnPosition()
@@ -400,6 +418,18 @@ public class WaveSpawner : NetworkBehaviour
             Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * spawnRadius;
             return transform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
         }
+    }
+
+    private void UpdateWaveUI(int waveIndex)
+    {
+        if (_waveCountText != null)
+            _waveCountText.text = $"Wave {waveIndex + 1}";
+    }
+
+    private void UpdateEnemiesUI(int count)
+    {
+        if (_nbEnemyAliveText != null)
+            _nbEnemyAliveText.text = $"{count} Remaining enemies";
     }
 
     private void OnDrawGizmosSelected()
