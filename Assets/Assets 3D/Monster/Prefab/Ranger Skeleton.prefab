@@ -1288,10 +1288,10 @@ MonoBehaviour:
   knockbackGroundOffset: 0.05
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   towerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   wallMask:
     serializedVersion: 2
     m_Bits: 0
