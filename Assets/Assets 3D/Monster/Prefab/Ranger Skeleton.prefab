@@ -1130,6 +1130,7 @@ GameObject:
   - component: {fileID: 1401175020948493842}
   - component: {fileID: 3977962870212508883}
   - component: {fileID: 2058961372722240115}
+  - component: {fileID: -5503718427053416037}
   m_Layer: 11
   m_Name: Ranger Skeleton
   m_TagString: Untagged
@@ -1245,7 +1246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 12436465
+  GlobalObjectIdHash: 3338117993
   InScenePlacedSourceGlobalObjectIdHash: 977067565
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1285,10 +1286,10 @@ MonoBehaviour:
   knockbackGroundOffset: 0.05
   playerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   towerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   wallMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1296,7 +1297,7 @@ MonoBehaviour:
   fallbackTargetName: 
   fallbackTargetMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 0
   eye: {fileID: 0}
   _animator: {fileID: 0}
 --- !u!114 &2058961372722240115
@@ -1315,8 +1316,24 @@ MonoBehaviour:
   maxHealth: 100
   destroyOnDeath: 1
   deathDelay: 1
+  damageNumberHeight: 2
+  criticalThreshold: 50
   _currentHealth:
     m_InternalValue: 0
+--- !u!114 &-5503718427053416037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070731422015490877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad00c929f90f845ac9124ed5969853d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MobReward
+  ShowTopMostFoldoutHeaderGroup: 1
+  goldReward: 6
 --- !u!1 &5288574374358565890
 GameObject:
   m_ObjectHideFlags: 0
