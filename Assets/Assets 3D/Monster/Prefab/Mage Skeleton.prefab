@@ -1485,7 +1485,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   targetPriority: 0
   attackType: 1
-  detectionRadius: 12
+  detectionRadius: 90
   attackRange: 10
   attackCooldown: 3
   weaponHitbox: {fileID: 0}
