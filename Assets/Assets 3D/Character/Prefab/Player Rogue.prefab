@@ -2188,6 +2188,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4304863779998562683}
     - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: ultimateScript
+      value: 
+      objectReference: {fileID: -7121515543671264092}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: groundMask.m_Bits
       value: 256
       objectReference: {fileID: 0}
