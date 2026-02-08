@@ -1,10 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
 
-/// <summary>
-/// Ce script doit être placé dans la scène de jeu (NathanGame).
-/// Il spawn le personnage choisi dans la scène de sélection.
-/// </summary>
 public class PlayerSpawner : NetworkBehaviour
 {
     [Header("Character Prefabs")]
@@ -18,7 +14,6 @@ public class PlayerSpawner : NetworkBehaviour
     {
         if (IsServer)
         {
-            // Spawn les joueurs quand ils se connectent
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         }
     }
@@ -33,34 +28,41 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
-        // Demande au client son index de personnage puis spawn
-        SpawnPlayerForClient(clientId);
+        if (clientId == NetworkManager.ServerClientId)
+        {
+            // Le host : on a directement son index local
+            SpawnPlayerForClient(clientId, CharacterSelector.SelectedCharacterIndex);
+        }
+        // Les clients enverront leur index via RequestSpawnServerRpc
     }
 
-    private void SpawnPlayerForClient(ulong clientId)
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestSpawnServerRpc(int characterIndex, ServerRpcParams rpcParams = default)
     {
-        // Récupère l'index du personnage sélectionné
-        int characterIndex = CharacterSelector.SelectedCharacterIndex;
+        ulong clientId = rpcParams.Receive.SenderClientId;
 
-        // Vérifie que l'index est valide
+        // Vérifie que ce client n'a pas déjà un player object
+        if (NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject != null) return;
+
+        SpawnPlayerForClient(clientId, characterIndex);
+    }
+
+    private void SpawnPlayerForClient(ulong clientId, int characterIndex)
+    {
         if (characterIndex < 0 || characterIndex >= characterPrefabs.Length)
         {
             Debug.LogError($"Invalid character index: {characterIndex}. Using default (0).");
             characterIndex = 0;
         }
 
-        // Position de spawn
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : Vector3.zero;
-        spawnPos += new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f)); // Offset aléatoire
+        spawnPos += new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
 
-        // Spawn le personnage
         GameObject player = Instantiate(characterPrefabs[characterIndex], spawnPos, Quaternion.identity);
 
-        // Hardcode tag et layer Player (seulement sur le root, pas les enfants)
         player.tag = "Player";
         player.layer = LayerMask.NameToLayer("Player");
 
-        // Spawn sur le réseau et donne le contrôle au client
         NetworkObject netObj = player.GetComponent<NetworkObject>();
         if (netObj != null)
         {
