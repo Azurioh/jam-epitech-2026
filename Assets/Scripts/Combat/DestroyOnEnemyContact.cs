@@ -3,22 +3,23 @@ using UnityEngine;
 
 public class DestroyOnEnemyContact : MonoBehaviour
 {
-    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask destroyOnContactLayer;
 
     void OnCollisionEnter(Collision collision)
     {
-        if (((1 << collision.gameObject.layer) & enemyLayer) != 0)
+        if (((1 << collision.gameObject.layer) & destroyOnContactLayer) != 0)
             DestroyObject();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (((1 << other.gameObject.layer) & enemyLayer) != 0)
+        if (((1 << other.gameObject.layer) & destroyOnContactLayer) != 0)
             DestroyObject();
     }
 
     private void DestroyObject()
     {
+        Debug.Log("hit detrfensfse ofuj");
         var netObj = GetComponent<NetworkObject>();
         if (netObj != null && netObj.IsSpawned)
         {

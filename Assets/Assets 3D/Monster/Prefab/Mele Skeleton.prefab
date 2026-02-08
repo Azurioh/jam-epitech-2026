@@ -1931,7 +1931,7 @@ GameObject:
   - component: {fileID: 6830652645413025395}
   m_Layer: 11
   m_Name: Mele Skeleton
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
