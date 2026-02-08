@@ -497,6 +497,8 @@ public class EnemyAI : MonoBehaviour
         Vector3 direction = (target.position + Vector3.up * 0.5f - spawnPos).normalized;
 
         GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(direction));
+        var netObj = proj.GetComponent<Unity.Netcode.NetworkObject>();
+        if (netObj != null) netObj.Spawn();
     }
 
     private bool TryGetDamageable(Transform target, out IDamageable damageable, out Transform root)
