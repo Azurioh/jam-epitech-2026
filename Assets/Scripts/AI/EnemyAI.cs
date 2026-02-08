@@ -363,6 +363,11 @@ public class EnemyAI : MonoBehaviour
         for (int i = 0; i < hits.Length; i++)
         {
             Transform candidate = hits[i].transform;
+
+            // Ignorer les cibles mortes (0 HP)
+            Health targetHealth = candidate.GetComponentInParent<Health>();
+            if (targetHealth != null && !targetHealth.IsAlive) continue;
+
             float dist = Vector3.Distance(transform.position, candidate.position);
             if (dist < bestDist)
             {
@@ -461,10 +466,11 @@ public class EnemyAI : MonoBehaviour
     private void TryAttack(Transform target)
     {
         // Debug.Log("Trying to attack: " + target.name);
-        if (Time.time < _nextAttackTime)
-        {
-            return;
-        }
+        if (Time.time < _nextAttackTime) return;
+
+        // Ne pas attaquer les cibles mortes
+        Health targetHealth = target.GetComponentInParent<Health>();
+        if (targetHealth != null && !targetHealth.IsAlive) return;
 
         // Regarder la cible avant d'attaquer
         Vector3 lookDir = (target.position - transform.position);

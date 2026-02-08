@@ -19,7 +19,6 @@ public class DestroyOnEnemyContact : MonoBehaviour
 
     private void DestroyObject()
     {
-        Debug.Log("hit detrfensfse ofuj");
         var netObj = GetComponent<NetworkObject>();
         if (netObj != null && netObj.IsSpawned)
         {

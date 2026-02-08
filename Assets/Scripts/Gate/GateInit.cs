@@ -1,29 +1,49 @@
+using Unity.Netcode;
 using UnityEngine;
-using TMPro;
 
-public class GateInit : MonoBehaviour, IDamageable
+public class GateInit : NetworkBehaviour, IDamageable
 {
-    public int health = 1000; 
-    public int maxHealth = 1000;
+    [SerializeField] private int startHealth = 1000;
+    [SerializeField] private int startMaxHealth = 1000;
+
+    public NetworkVariable<int> health = new NetworkVariable<int>(1000);
+    public NetworkVariable<int> maxHealth = new NetworkVariable<int>(1000);
+
     public enum TypeSelection { North, South, West, East }
     public TypeSelection direction;
     public GameObject gate;
-    
-    void Update()
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            health.Value = startHealth;
+            maxHealth.Value = startMaxHealth;
+        }
+
+        health.OnValueChanged += OnHealthChanged;
+        UpdateGate(health.Value);
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        health.OnValueChanged -= OnHealthChanged;
+    }
+
+    private void OnHealthChanged(int oldValue, int newValue)
+    {
+        UpdateGate(newValue);
+    }
+
+    private void UpdateGate(int currentHealth)
     {
         if (!gate) return;
-        if (health <= 0) {
-            health = 0;
-            gate.SetActive(false);
-        } else {
-            gate.SetActive(true);
-        }
+        gate.SetActive(currentHealth > 0);
     }
 
     public void TakeDamage(float damage)
     {
-        health -= (int)damage;
-        if (health < 0)
-            health = 0;
+        if (!IsServer) return;
+        health.Value = Mathf.Max(0, health.Value - (int)damage);
     }
 }
