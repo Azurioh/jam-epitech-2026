@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1033332389
+  GlobalObjectIdHash: 2128738033
   InScenePlacedSourceGlobalObjectIdHash: 977067565
   DeferredDespawnTick: 0
   Ownership: 1
@@ -163,7 +163,7 @@ MonoBehaviour:
   detectionRadius: 90
   attackRange: 1.8
   attackCooldown: 1
-  weaponHitbox: {fileID: 0}
+  weaponHitbox: {fileID: 2214985853518760380}
   projectilePrefab: {fileID: 0}
   shootPoint: {fileID: 0}
   knockbackDamping: 10
@@ -186,7 +186,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   eye: {fileID: 0}
-  _animator: {fileID: 0}
+  _animator: {fileID: 4882494725994447960}
 --- !u!114 &7253097127433282734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,6 +412,11 @@ Transform:
 --- !u!4 &2439982321619945933 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5515783359193845756, guid: d6eab7c74989742fdab8f7f233af7189, type: 3}
+  m_PrefabInstance: {fileID: 1344481428139588041}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4882494725994447960 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: d6eab7c74989742fdab8f7f233af7189, type: 3}
   m_PrefabInstance: {fileID: 1344481428139588041}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7909204009785840935 stripped

@@ -59,6 +59,7 @@ public class EnemyAI : MonoBehaviour
     private float _nextAttackTime;
     private float _lastAttackTime = -999f;
     private float _nextRetargetTime;
+    private Transform _cachedFallbackWall;
     private float _baseAgentSpeed;
 
     private Vector3 _knockbackVelocity;
@@ -69,6 +70,10 @@ public class EnemyAI : MonoBehaviour
     private LagEffectReceiver _lagReceiver;
 
     private bool _isDead;
+
+    private Vector3 _lastDestination;
+    private float _currentAnimSpeed;
+    private const float ANIM_SPEED_SMOOTHING = 10f;
 
     private readonly int speedHash = Animator.StringToHash("Speed");
     private readonly int attackHash = Animator.StringToHash("Attack");
@@ -205,30 +210,29 @@ public class EnemyAI : MonoBehaviour
         {
             if (_agent != null && _agent.isOnNavMesh && fallbackTarget != null)
             {
-                // Debug.Log("No target found, fallback to: " + fallbackTarget.name);
-                Transform wallToAttack = FindWallTowardsTarget(fallbackTarget.position);
-                if (wallToAttack != null)
+                // Calculer le mur une seule fois (le château/murs ne bougent jamais)
+                if (_cachedFallbackWall == null)
                 {
-                    float distanceToWall = Vector3.Distance(transform.position, wallToAttack.position);
-                    // Debug.Log("Found wall to attack: " + wallToAttack.name + " at distance: " + distanceToWall);
-                    bool inAttackRange = distanceToWall <= attackRange;
-                    
-                    if (!inAttackRange)
+                    _cachedFallbackWall = FindWallTowardsTarget(fallbackTarget.position);
+                }
+
+                Transform targetToMoveTo = _cachedFallbackWall != null ? _cachedFallbackWall : fallbackTarget;
+                float distance = Vector3.Distance(transform.position, targetToMoveTo.position);
+                bool inAttackRange = distance <= attackRange;
+                
+                _agent.isStopped = inAttackRange;
+                if (!inAttackRange)
+                {
+                    // Ne mettre à jour la destination que si elle a changé significativement
+                    if (Vector3.Distance(_lastDestination, targetToMoveTo.position) > 0.1f)
                     {
-                        _agent.isStopped = false;
-                        _agent.SetDestination(wallToAttack.position);
-                        // Debug.Log($"Moving towards wall: {wallToAttack.name} at distance {distanceToWall}");
-                    }
-                    else
-                    {
-                        _agent.isStopped = true;
-                        TryAttack(wallToAttack);
+                        _agent.SetDestination(targetToMoveTo.position);
+                        _lastDestination = targetToMoveTo.position;
                     }
                 }
-                else
+                else if (_cachedFallbackWall != null)
                 {
-                    _agent.isStopped = false;
-                    _agent.SetDestination(fallbackTarget.position);
+                    TryAttack(_cachedFallbackWall);
                 }
             }
             else if (_agent != null && _agent.isOnNavMesh)
@@ -246,7 +250,12 @@ public class EnemyAI : MonoBehaviour
                 _agent.isStopped = inAttackRange;
                 if (!inAttackRange)
                 {
-                    _agent.SetDestination(_currentTarget.position);
+                    // Ne mettre à jour la destination que si elle a changé significativement
+                    if (Vector3.Distance(_lastDestination, _currentTarget.position) > 0.5f)
+                    {
+                        _agent.SetDestination(_currentTarget.position);
+                        _lastDestination = _currentTarget.position;
+                    }
                 }
             }
             else
@@ -255,7 +264,12 @@ public class EnemyAI : MonoBehaviour
                 _agent.isStopped = inAttackRange;
                 if (!inAttackRange)
                 {
-                    _agent.SetDestination(_currentTarget.position);
+                    // Ne mettre à jour la destination que si elle a changé significativement
+                    if (Vector3.Distance(_lastDestination, _currentTarget.position) > 0.5f)
+                    {
+                        _agent.SetDestination(_currentTarget.position);
+                        _lastDestination = _currentTarget.position;
+                    }
                 }
             }
 
@@ -273,8 +287,9 @@ public class EnemyAI : MonoBehaviour
 
         if (_animator != null && _agent != null && _agent.isOnNavMesh)
         {
-            float speed = _agent.velocity.magnitude / _agent.speed;
-            _animator.SetFloat(speedHash, speed);
+            float targetSpeed = _agent.velocity.magnitude / _agent.speed;
+            _currentAnimSpeed = Mathf.Lerp(_currentAnimSpeed, targetSpeed, ANIM_SPEED_SMOOTHING * deltaTime);
+            _animator.SetFloat(speedHash, _currentAnimSpeed);
         }
     }
 
@@ -282,8 +297,9 @@ public class EnemyAI : MonoBehaviour
     {
         if (_animator == null || _agent == null || !_agent.isOnNavMesh) return;
 
-        float speed = _agent.velocity.magnitude / _agent.speed;
-        _animator.SetFloat(speedHash, speed);
+        float targetSpeed = _agent.velocity.magnitude / _agent.speed;
+        _currentAnimSpeed = Mathf.Lerp(_currentAnimSpeed, targetSpeed, ANIM_SPEED_SMOOTHING * Time.deltaTime);
+        _animator.SetFloat(speedHash, _currentAnimSpeed);
     }
 
     private bool HandleKnockback(float deltaTime)
@@ -437,22 +453,20 @@ public class EnemyAI : MonoBehaviour
 
     private Transform FindWallTowardsTarget(Vector3 targetPosition)
     {
-        // Chercher tous les murs dans un rayon de détection
-        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRadius * 100, fallbackTargetMask, QueryTriggerInteraction.Ignore);
+        // Chercher les murs dans un rayon raisonnable (30 unités)
+        Collider[] hits = Physics.OverlapSphere(transform.position, 30f, wallMask, QueryTriggerInteraction.Ignore);
         Transform best = null;
         float bestDist = float.MaxValue;
-        // Debug.Log("Found " + hits.Length + " walls in detection radius.");
+        
         for (int i = 0; i < hits.Length; i++)
         {
-            // Debug.Log("Checking wall: " + hits[i].name + " distance to target: " + Vector3.Distance(hits[i].transform.position, targetPosition));
             if (!TryGetDamageable(hits[i].transform, out _, out Transform root))
             {
                 continue;
             }
             float distance = Vector3.Distance(transform.position, root.position);
-            // Debug.Log("Wall " + root.name + " is damageable. Distance to target: " + Vector3.Distance(root.position, targetPosition) + " vs " + distance + "best: " + bestDist);
 
-            // Simplement prendre le mur le plus proche
+            // Prendre le mur le plus proche
             if (distance < bestDist)
             {
                 bestDist = distance;

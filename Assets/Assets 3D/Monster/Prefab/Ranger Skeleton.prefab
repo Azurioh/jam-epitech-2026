@@ -1301,7 +1301,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   eye: {fileID: 0}
-  _animator: {fileID: 0}
+  _animator: {fileID: 4462169204800210312}
 --- !u!114 &2058961372722240115
 MonoBehaviour:
   m_ObjectHideFlags: 0

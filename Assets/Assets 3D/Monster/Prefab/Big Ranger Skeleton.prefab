@@ -218,7 +218,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   eye: {fileID: 0}
-  _animator: {fileID: 0}
+  _animator: {fileID: 5522571293743970114}
 --- !u!114 &5058837764027428540
 MonoBehaviour:
   m_ObjectHideFlags: 0

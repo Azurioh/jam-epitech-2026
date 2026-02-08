@@ -186,7 +186,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   eye: {fileID: 0}
-  _animator: {fileID: 0}
+  _animator: {fileID: 3502934401655810440}
 --- !u!114 &2895107400395493864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,6 +589,11 @@ Transform:
 --- !u!4 &2206152998870055159 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9181623134346800366, guid: d6eab7c74989742fdab8f7f233af7189, type: 3}
+  m_PrefabInstance: {fileID: 7058963531507438617}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &3502934401655810440 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: d6eab7c74989742fdab8f7f233af7189, type: 3}
   m_PrefabInstance: {fileID: 7058963531507438617}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &5945448240555844637 stripped
