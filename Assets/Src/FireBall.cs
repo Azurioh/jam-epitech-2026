@@ -3,7 +3,7 @@ using UnityEngine;
 public class Fireball : MonoBehaviour
 {
     public float initialSpeed = 15f;
-    public float damageRadius = 2f;
+    public float damageRadius = 5f;
     public int damage = 30;
     public LayerMask enemyLayer;
     public LayerMask groundLayer;
@@ -16,7 +16,10 @@ public class Fireball : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.linearVelocity = transform.forward * initialSpeed;
+            if (rb.linearVelocity.magnitude < 0.1f)
+            {
+                rb.linearVelocity = transform.forward * initialSpeed;
+            }
         }
     }
 
@@ -44,6 +47,11 @@ public class Fireball : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
+            Health health = hit.GetComponent<Health>();
+            if (health != null)
+            {
+                health.TakeDamage(damage);
+            }
         }
 
         Destroy(gameObject, 3f);

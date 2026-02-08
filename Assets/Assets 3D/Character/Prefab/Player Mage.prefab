@@ -2246,6 +2246,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8533560268397287980}
     - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: abilityScript
+      value: 
+      objectReference: {fileID: -6474100976248500497}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      propertyPath: ultimateScript
+      value: 
+      objectReference: {fileID: 7138186516951514619}
+    - target: {fileID: -2745410851796699391, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       propertyPath: projectilePrefab
       value: 
       objectReference: {fileID: 8195572163558442535, guid: 668d972e3c1f64742b693440112508c3, type: 3}
@@ -2344,8 +2352,59 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 217365659177776711}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7138186516951514619}
+    - targetCorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6474100976248500497}
   m_SourcePrefab: {fileID: 100100000, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+--- !u!1 &7168423811401278782 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1893179199114277847, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}
+  m_PrefabInstance: {fileID: 8736621582960236265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7138186516951514619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7168423811401278782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98d565631eaca28fab8fa490e9b9a89d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MageMeteorRain
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 15
+  attackLockDuration: 1
+  meteorPrefab: {fileID: 5008855868476876923, guid: 57cdace0d6212451a82afbca42a0cd97, type: 3}
+  meteorCount: 10
+  rainDuration: 3
+  rainRadius: 5
+  spawnHeight: 15
+  meteorSpeed: 20
+  forwardOffset: 5
+--- !u!114 &-6474100976248500497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7168423811401278782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa96499618b2eefb2aca0f47fba854cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MageFireball
+  ShowTopMostFoldoutHeaderGroup: 1
+  cooldown: 5
+  attackLockDuration: 0.5
+  fireballPrefab: {fileID: 539735879291116032, guid: f13a9c9d52fae4c6d8a619dab1ad1894, type: 3}
+  shootPoint: {fileID: 0}
+  projectileSpeed: 20
 --- !u!4 &8071450662453823608 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 665752737735892625, guid: 0a4ab6ab06c164009a25cf14a9bffeb3, type: 3}

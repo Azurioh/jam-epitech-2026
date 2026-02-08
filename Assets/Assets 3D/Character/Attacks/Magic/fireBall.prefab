@@ -4937,10 +4937,10 @@ MonoBehaviour:
   damage: 30
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2048
   groundLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   explosionFX: {fileID: 8053681110751897177}
 --- !u!1 &3166541015479558974
 GameObject:
