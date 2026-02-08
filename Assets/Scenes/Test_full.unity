@@ -513,6 +513,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3537369113283391313, guid: ecfb9363a9591ff4a9e757c9881aab1e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2088162972}
+    - targetCorrespondingSourceObject: {fileID: 8566706225057281719, guid: ecfb9363a9591ff4a9e757c9881aab1e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2006971325}
   m_SourcePrefab: {fileID: 100100000, guid: ecfb9363a9591ff4a9e757c9881aab1e, type: 3}
 --- !u!1 &1090191138 stripped
 GameObject:
@@ -776,6 +779,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8566706225057281719, guid: ecfb9363a9591ff4a9e757c9881aab1e, type: 3}
   m_PrefabInstance: {fileID: 923955098}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2006971325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2006971324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc916388588cdb24bb1afcf147135686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleInit
+  health: 5000
+  maxHealth: 5000
 --- !u!1 &2008272940 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4133945957835849748, guid: ecfb9363a9591ff4a9e757c9881aab1e, type: 3}
